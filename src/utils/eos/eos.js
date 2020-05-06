@@ -306,19 +306,22 @@ class model {
 async getTableRows(callback) {
   const formName = this.accountReset();
   const params = {
-    "json": true,
-    "code": "eosio",
-    "scope": "eosio",
+    "code": "jinbankoneo1",
+    "scope": "jinbankoneo1",
     "table": "debts",
-    lower_bound: formName,
-    upper_bound: formName,
+    lower_bound: 1,
+    upper_bound: 100,
     json: true
   };
   // 配置
   if (!this.EosJsUse) {
     await this.chainNodeInit('eos')
   }
-  this.EosJsUse.getTableRows(params).then((rammarket) => callback(rammarket)).catch((e) => {
+  this.EosJsUse.getTableRows(params).then((rammarket) => {
+    console.log(formName)
+    const newList = rammarket.rows.filter(v => v.owner === formName)
+    callback(newList)
+  }).catch((e) => {
     this.errorCall(e, callback);
   });
 }
@@ -425,7 +428,7 @@ async getTableRows(callback) {
     const params = {
       actions: [
         {
-          account: 'newdexstaked',
+          account: 'jinbankoneo1',
           name: 'stake',
           authorization: [{
             actor: formName, // 转账者
@@ -433,10 +436,6 @@ async getTableRows(callback) {
           }],
           data: {
             id: obj.id,
-            owner: formName, // 转账者 - 'testtesttest'
-            quantity: obj.amount, // 数量 - '1.0000 NDX'
-            blockchain: 'eos', // 抵押账户所属链
-            stakefor: formName, // 抵押账户
           }
         }
       ]

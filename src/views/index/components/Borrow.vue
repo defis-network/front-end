@@ -89,7 +89,7 @@ export default {
     handleTransfer() {
       const params = {
         code: 'eosio.token',
-        toAccount: 'myconfidence',
+        toAccount: 'jinbankoneo1',
         memo: 'mint',
         quantity: `${this.stakeNum} EOS`
       }

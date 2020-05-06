@@ -121,7 +121,8 @@ export default {
     scatter: {
       handler: function listen(newVal) {
         if (newVal.identity) {
-          clearInterval(this.timer)
+          clearInterval(this.timer);
+          this.handleRows();
           this.handleGetBalance();
           this.handleGetBalance('next');
           this.timer = setInterval(() => {
@@ -135,6 +136,7 @@ export default {
     }
   },
   mounted() {
+    this.handleRows();
   },
   beforeDestroy() {
     clearInterval(this.timer)
@@ -156,8 +158,8 @@ export default {
         decimal: 4
       };
       if (next) {
-        params.code = 'danchortoken';
-        params.coin = 'USN';
+        params.code = 'jinbankoneo1';
+        params.coin = 'JIN';
       }
       await EosModel.getCurrencyBalance(params, res => {
         if (!res || res.length === 0) {
@@ -177,8 +179,8 @@ export default {
     // 赎回
     handleRedeem(item) {
       const params = {
-        code: 'eosio.token',
-        toAccount: 'myconfidence',
+        code: 'jinbankoneo1',
+        toAccount: 'jinbankoneo1',
         memo: `redeem: ${item.id}`,
         quantity: `${item.num} JIN`
       }
@@ -200,7 +202,6 @@ export default {
     handleStake(item) {
       const params = {
         id: item.id,
-        amount: '100.0000 NDX'
       }
       EosModel.stake(params, (res) => {
         if(res) {
@@ -215,6 +216,12 @@ export default {
           type: 'success'
         });
       });
+    },
+    // 生成列表
+    handleRows() {
+      EosModel.getTableRows((res) => {
+        console.log(res)
+      })
     }
   }
 }
