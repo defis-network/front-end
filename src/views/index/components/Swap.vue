@@ -135,6 +135,7 @@ export default {
      ...mapState({
       // 箭头函数可使代码更简练
       scatter: state => state.app.scatter,
+      baseConfig: state => state.sys.baseConfig, // 基础配置 - 默认为{}
     })
   },
   methods: {
@@ -156,7 +157,7 @@ export default {
     // 获取账户当前交易对凭证数量
     handleGetAccToken() {
       const params = {
-        code: 'jinswap11111',
+        code: this.baseConfig.toAccountSwap,
         scope: this.thisMarket.mid,
         table: 'liquidity',
         lower_bound: this.scatter.identity.accounts[0].name,
@@ -193,7 +194,7 @@ export default {
       const params = {
         actions: [
           {
-            account: 'jinswap11111',
+            account: this.baseConfig.toAccountSwap,
             name: 'deposit',
             authorization: [{
               actor: formName, // 转账者
@@ -213,7 +214,7 @@ export default {
             }],
             data: {
               from: formName,
-              to: 'jinswap11111',
+              to: this.baseConfig.toAccountSwap,
               quantity: `${this.payNum1} ${obj.symbol0}`,
               memo: `deposit`
             }
@@ -227,7 +228,7 @@ export default {
             }],
             data: {
               from: formName,
-              to: 'jinswap11111',
+              to: this.baseConfig.toAccountSwap,
               quantity: `${this.payNum2} ${obj.symbol1}`,
               memo: `deposit`
             }
@@ -268,7 +269,7 @@ export default {
       const params = {
         actions: [
           {
-            account: 'jinswap11111',
+            account: this.baseConfig.toAccountSwap,
             name: 'withdraw',
             authorization: [{
               actor: formName, // 转账者

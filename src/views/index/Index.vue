@@ -1,5 +1,6 @@
 <template>
   <div class="main">
+    <warm-tip />
     <div class="index">
       <el-tabs v-model="activeName">
         <el-tab-pane label="生成JIN" name="first">
@@ -7,7 +8,7 @@
             @listenLogin="handleLogin" :balanceEos="balanceEos" :balanceJin="balanceJin"/>
         </el-tab-pane>
         <el-tab-pane label="交易兑换" name="second">
-          <trade
+          <trade v-if="activeName === 'second'"
             @listenLogin="handleLogin" :balanceEos="balanceEos" :balanceJin="balanceJin"
             :marketLists="marketLists"/>
         </el-tab-pane>
@@ -60,6 +61,7 @@
 import { EosModel } from '@/utils/eos';
 import { mapState } from 'vuex'
 import { toLocalTime } from '@/utils/public';
+import WarmTip from '@/components/WarmTip';
 import Borrow from './components/Borrow';
 import Trade from './components/Trade';
 import Swap from './components/Swap';
@@ -67,6 +69,7 @@ import Swap from './components/Swap';
 export default {
   name: 'index',
   components: {
+    WarmTip,
     Borrow,
     Trade,
     Swap
@@ -86,6 +89,7 @@ export default {
     ...mapState({
       // 箭头函数可使代码更简练
       scatter: state => state.app.scatter,
+      baseConfig: state => state.sys.baseConfig, // 基础配置 - 默认为{}
     })
   },
   watch: {
@@ -129,7 +133,7 @@ export default {
         decimal: 4
       };
       if (next) {
-        params.code = 'jinbankoneo1';
+        params.code = this.baseConfig.toAccountJin;
         params.coin = 'JIN';
       }
       await EosModel.getCurrencyBalance(params, res => {
@@ -164,8 +168,8 @@ export default {
         return
       }
       const params = {
-        code: 'jinbankoneo1',
-        toAccount: 'jinbankoneo1',
+        code: this.baseConfig.toAccountJin,
+        toAccount: this.baseConfig.toAccountJin,
         memo: `redeem: ${item.id}`,
         quantity: item.issue
       }
@@ -205,8 +209,8 @@ export default {
     // 生成列表
     handleRowsMint() {
       const params = {
-        code: 'jinbankoneo1',
-        scope: 'jinbankoneo1',
+        code: this.baseConfig.toAccountJin,
+        scope: this.baseConfig.toAccountJin,
         table: 'debts',
         lower_bound: 1,
         upper_bound: 100,
@@ -223,8 +227,8 @@ export default {
     // 获取做市池子
     handleRowsMarket() {
       const params = {
-        code: 'jinswap11111',
-        scope: 'jinswap11111',
+        code: this.baseConfig.toAccountSwap,
+        scope: this.baseConfig.toAccountSwap,
         table: 'markets',
         json: true
       }
@@ -247,7 +251,8 @@ export default {
 
 <style lang="scss" scoped>
 .main{
-  width: 800px;
+  width: 100%;
+  max-width: 800px;
   margin: auto;
   .tableList{
     margin-top: 30px;
@@ -270,11 +275,11 @@ export default {
   }
 }
 .index{
-  margin-top: 30px;
-  border: 1px solid #fafafa;
+  margin-top: 20px;
+  // border: 1px solid #fafafa;
   border-radius: 5px;
-  box-shadow: 0 0 5px 5px #fafafa;
-  padding: 25px;
+  // box-shadow: 0 0 5px 5px #fafafa;
+  padding: 0px 10px;
 
   .tab{
     display: flex;

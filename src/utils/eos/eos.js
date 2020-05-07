@@ -33,8 +33,9 @@ class model {
     this.EosJsUse = null;
     this.network = null;
     this.eosOptions = null;
+    this.toAccountJin = store.state.sys.baseConfig.toAccountJin;
+    this.toAccountSwap = store.state.sys.baseConfig.toAccountSwap;
     this.actor = this.env === 'production' ? '111.3' : '11111111aaaa'; // 1111
-    this.env = sessionStorage.getItem('ENV') || 'production'
   }
 
   vueThisInit(vt, chain) {
@@ -51,7 +52,7 @@ class model {
       callback();
       return;
     }
-    scatterJS.scatter.connect('newdex.io').then(async connected => {
+    scatterJS.scatter.connect('jin-network.hodls.cn').then(async connected => {
       scatterConnected = connected;
       if (!connected) {
         nowFrequency += 1;
@@ -148,24 +149,7 @@ class model {
 
   // 节点信息获取
   returnChainInfo() {
-    let envobj = {
-      area: 'Hongkong, HK',
-      chainId: "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
-      host: 'api.eossweden.se',
-      port: '443',
-      protocol: 'https',
-      url: 'https://api.eossweden.se'
-    };
-    if (this.env !== 'production') {
-      return {
-        url: "http://183.250.89.179:58888",
-        protocol: "http",
-        host: "183.250.89.179",
-        port: "58888",
-        area: "local",
-        chainId: "cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f",
-      };
-    }
+    let envobj = store.state.sys.baseConfig.node;
     return envobj;
   }
 
@@ -419,7 +403,7 @@ async getTableRows(obj, callback) {
     const params = {
       actions: [
         {
-          account: 'jinbankoneo1',
+          account: this.toAccountJin,
           name: 'stake',
           authorization: [{
             actor: formName, // 转账者
@@ -440,7 +424,6 @@ async getTableRows(obj, callback) {
       return;
     }
     this.scatterEosJs.transaction(params).then(callback).catch((e) => {
-      console.log(e)
       this.errorCall(e, callback);
     });
   }
@@ -457,9 +440,7 @@ async getTableRows(obj, callback) {
       this.freeCpuTransaction(params, callback);
       return;
     }
-    console.log(params)
     this.scatterEosJs.transaction(params).then(callback).catch((e) => {
-      console.log(e)
       this.errorCall(e, callback);
     });
   }

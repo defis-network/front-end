@@ -1,38 +1,52 @@
 // 系统性状态存储
 const sys = {
   state: {
-    baseConfig: { // 服务器状态设置 - 1:开通 | 0: 暂停
-      issue: 1, // 生成USN
-      repay: 1, // 偿还USN
-      auction: 1, // 爆单抢拍
-      deposit: 1, // 增加抵押量
-      withdraw: 1, // 减少抵押量
-      maintain: 1, // 整服
-      warnRateColor: 135, // 未爆仓比率颜色
-      marginRateColor: 125, // 爆仓比率颜色
-      marginRate: 1.25, // 爆仓比率
-      initialDiscount: 0.98, // 爆仓拍卖初始折扣
-      lastDiscount: 0.9, // 爆仓拍卖最低折扣
-      declining: 0.1, // 爆仓拍卖每轮递减折扣
-      auctionTime: 0, // 爆仓后开卖时间
-      durationTime: 60, // 爆仓拍卖持续时间
-      intervalTime: 1, // 爆仓拍卖轮次间隔时间
-      forfeit: 0.15, // 爆仓罚金
-      gratis: 10, // 免CPU次数
-      interestFree: 1, // 开仓偿还免息时间
-      interestfRate: 0.01, // 年化利率
+    baseConfig: {
     },
     // 区块链浏览器配置
     blockBrowser: {
       eos: {
-        // tx: 'https://eospark.com/tx/',
-        // account: 'https://eospark.com/account/',
         tx: 'https://bloks.io/transaction/',
         account: 'https://bloks.io/account/',
         token: 'https://bloks.io/tokens/',
       },
     },
-    toAccount: localStorage.getItem('toAccount') ? localStorage.getItem('toAccount') : 'danchorsmart', // 接收账户
+    testConfig: { // 测试环境配置
+      node: {
+        area: "test",
+        protocol: "https",
+        host: "api.testnet.eos.io",
+        port: "443",
+        url: "https://api.testnet.eos.io/",
+        chainId: "cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f",
+      },
+      toAccountSwap: '',
+      toAccountJin: '',
+    },
+    devConfig: { // 开发环境配置
+      node: {
+        area: "dev",
+        protocol: "http",
+        host: "183.250.89.179",
+        port: "58888",
+        url: "http://183.250.89.179:58888",
+        chainId: "cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f",
+      },
+      toAccountSwap: 'jinswap11111',
+      toAccountJin: 'jinbankoneo1',
+    },
+    proConfig: { // 生产环境配置
+      node: {
+        area: 'production',
+        protocol: 'https',
+        host: 'api.eossweden.se',
+        port: '443',
+        url: 'https://api.eossweden.se',
+        chainId: "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
+      },
+      toAccountSwap: '',
+      toAccountJin: '',
+    }
   },
   mutations: {
     SET_BASECONFIG: (state, baseConfig) => {

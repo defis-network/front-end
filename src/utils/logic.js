@@ -16,16 +16,16 @@ const config = {
  *  direction: 0 - buyJIN | 1 - sellJIN
  *  payNum: 输入支付数量
  *  getNum: 输入获得数量
- *  poolEos: EOS池子数量
- *  poolJin: JIN池子数量
+ *  poolSym0: EOS池子数量
+ *  poolSym1: JIN池子数量
  * }
  */
 export function dealTrade(inData) {
   // EOS价格
-  let eosPrice = inData.poolJin / inData.poolEos;
+  let eosPrice = inData.poolSym1 / inData.poolSym0;
       eosPrice = toFixed(eosPrice, 8);
   // JIN价格
-  let jinPrice = inData.poolEos / inData.poolJin;
+  let jinPrice = inData.poolSym0 / inData.poolSym1;
       jinPrice = toFixed(jinPrice, 8);
   const outData = {
     eosPrice, // 当前EOS价格
@@ -40,6 +40,7 @@ export function dealTrade(inData) {
   // 计算1: 根据输入支付数量 计算 得到数量 成交价格 滑点
   // 计算2: 根据输入得到数量 计算 支付数量 成交价格 滑点
   const { payNum, getNum, aboutPrice } = dealPayToGet(inData); // 获得支付数量 & 得到数量
+  console.log({ payNum, getNum, aboutPrice })
   const slipPoint = (aboutPrice - jinPrice) / jinPrice; // 溢价率 =（当前价格-预估成交价）/ 当前价格
   return Object.assign(outData, {
     payNum, getNum, aboutPrice, slipPoint
@@ -47,15 +48,15 @@ export function dealTrade(inData) {
 }
 
 function dealPayToGet(inData) {
-  const Invariant = inData.poolJin * inData.poolEos;
-  const payMainPool = inData.direction ? inData.poolJin : inData.poolEos; // 支付池子 - 池子里币种数量增加
-  const getMainPool = inData.direction ? inData.poolEos : inData.poolJin; // 得到池子 - 池子里币种数量减少
+  const Invariant = inData.poolSym1 * inData.poolSym0;
+  const payMainPool = inData.direction ? inData.poolSym1 : inData.poolSym0; // 支付池子 - 池子里币种数量增加
+  const getMainPool = inData.direction ? inData.poolSym0 : inData.poolSym1; // 得到池子 - 池子里币种数量减少
   let payNum, getNum, aboutPrice;
   // 输入支付金额
   if (Number(inData.payNum)) {
     payNum = inData.payNum;
     let byNum = payNum - payNum * config.rate; // 实际用于交易的数量 - 去除手续费后的支付金额
-    let payPool = payMainPool + byNum; // 交易成功后，池子应到达金额
+    let payPool = Number(payMainPool) + Number(byNum); // 交易成功后，池子应到达金额
     let getPool = Invariant / payPool; // 交易成功后，对应池子应减少到的数量
     getNum = getMainPool - getPool; // 最终获取到的数量
   } else { // 输入得到数量

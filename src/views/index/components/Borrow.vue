@@ -27,7 +27,7 @@
         </el-input>
       </el-form-item>
       <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleTransfer">生成JIN</el-button>
-        <el-button class="btn" type="primary" v-else @click="handleLogin">请先登录</el-button>
+      <el-button class="btn" type="primary" v-else @click="handleLogin">请先登录</el-button>
     </el-form>
   </div>
 </template>
@@ -69,6 +69,7 @@ export default {
      ...mapState({
       // 箭头函数可使代码更简练
       scatter: state => state.app.scatter,
+      baseConfig: state => state.sys.baseConfig, // 基础配置 - 默认为{}
     })
   },
   props: {
@@ -93,7 +94,7 @@ export default {
     handleTransfer() {
       const params = {
         code: 'eosio.token',
-        toAccount: 'jinbankoneo1',
+        toAccount: this.baseConfig.toAccountJin,
         memo: 'mint',
         quantity: `${this.stakeNum} EOS`
       }
