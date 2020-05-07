@@ -8,48 +8,41 @@
         </el-tab-pane>
         <el-tab-pane label="交易兑换" name="second">
           <trade
-            @listenLogin="handleLogin" :balanceEos="balanceEos" :balanceJin="balanceJin"/>
+            @listenLogin="handleLogin" :balanceEos="balanceEos" :balanceJin="balanceJin"
+            :marketLists="marketLists"/>
         </el-tab-pane>
         <el-tab-pane label="SWAP做市" name="third">
           <swap v-if="activeName === 'third'"
-            @listenLogin="handleLogin" :balanceEos="balanceEos" :balanceJin="balanceJin"/>
+            @listenLogin="handleLogin" :balanceEos="balanceEos" :balanceJin="balanceJin"
+            :marketLists="marketLists"/>
         </el-tab-pane>
       </el-tabs>
     </div>
     <!-- 列表 -->
-    <div class="tableList">
-      <div class="title">生成记录</div>
+    <div class="tableList" v-if="activeName === 'first'">
+      <div class="title">
+        <span>生成记录</span>
+        <span class="right">余额: {{ balanceJin }} JIN</span>
+      </div>
       <el-table
         :data="tableData"
         stripe
         style="width: 100%">
         <el-table-column
-          prop="date"
+          prop="ctime"
           label="日期"
           width="160">
         </el-table-column>
-        <!-- <el-table-column
-          prop="name"
-          label="账户"
-          width="170">
-        </el-table-column> -->
         <el-table-column
-          prop="stakedNum"
+          prop="pledge"
           label="抵押数量(EOS)"
           width="140">
         </el-table-column>
         <el-table-column
-          prop="num"
+          prop="issue"
           label="生成数量(JIN)"
           width="140">
         </el-table-column>
-        <!-- <el-table-column
-          width="140"
-          label="TrxID">
-          <template slot-scope="props">
-            <a target="_blank" href="#" class="trxId">{{ props.row.address }}</a>
-          </template>
-        </el-table-column> -->
         <el-table-column
         fixed="right"
           label="操作">
@@ -66,6 +59,7 @@
 <script>
 import { EosModel } from '@/utils/eos';
 import { mapState } from 'vuex'
+import { toLocalTime } from '@/utils/public';
 import Borrow from './components/Borrow';
 import Trade from './components/Trade';
 import Swap from './components/Swap';
@@ -84,35 +78,12 @@ export default {
       timer: null,
       balanceJin: '0.0000',
       balanceEos: '0.0000',
-      tableData: [{
-        date: '2016-05-02 00:00:00',
-        name: 'mmmmmmmmmmm1',
-        stakedNum: '300.0000',
-        num: '100.0000',
-        address: 'sadfytfqwytdf126t3712gubd',
-      }, {
-        date: '2016-05-02 00:00:00',
-        name: 'mmmmmmmmmmm2',
-        stakedNum: '300.0000',
-        num: '100.0000',
-        address: 'sadfytfqwytdf126t3712gubd'
-      }, {
-        date: '2016-05-02 00:00:00',
-        name: 'mmmmmmmmmmm3',
-        stakedNum: '300.0000',
-        num: '100.0000',
-        address: 'sadfytfqwytdf126t3712gubd'
-      }, {
-        date: '2016-05-02 00:00:00',
-        name: 'mmmmmmmmmmm4',
-        stakedNum: '300.0000',
-        num: '100.0000',
-        address: 'sadfytfqwytdf126t3712gubd'
-      }],
+      tableData: [], // 生成记录
+      marketLists: [], // 所有池子
     }
   },
   computed:{
-     ...mapState({
+    ...mapState({
       // 箭头函数可使代码更简练
       scatter: state => state.app.scatter,
     })
@@ -122,7 +93,7 @@ export default {
       handler: function listen(newVal) {
         if (newVal.identity) {
           clearInterval(this.timer);
-          this.handleRows();
+          this.handleRowsMint();
           this.handleGetBalance();
           this.handleGetBalance('next');
           this.timer = setInterval(() => {
@@ -136,7 +107,7 @@ export default {
     }
   },
   mounted() {
-    this.handleRows();
+    this.handleRowsMarket();
   },
   beforeDestroy() {
     clearInterval(this.timer)
@@ -176,16 +147,30 @@ export default {
         this.balanceEos = balance;
       })
     },
+    handleReg(item) {
+      const issue = item.issue.split(' ')[0]
+      if (Number(issue) > Number(this.balanceJin)) {
+        this.$message({
+          message: 'balance lower',
+          type: 'error'
+        })
+        return false;
+      }
+      return true
+    },
     // 赎回
     handleRedeem(item) {
+      if (!this.handleReg(item)) {
+        return
+      }
       const params = {
         code: 'jinbankoneo1',
         toAccount: 'jinbankoneo1',
         memo: `redeem: ${item.id}`,
-        quantity: `${item.num} JIN`
+        quantity: item.issue
       }
       EosModel.transfer(params, (res) => {
-        if(res) {
+        if(res.code) {
           this.$message({
             message: res.message,
             type: 'error'
@@ -204,7 +189,7 @@ export default {
         id: item.id,
       }
       EosModel.stake(params, (res) => {
-        if(res) {
+        if(res.code) {
           this.$message({
             message: res.message,
             type: 'error'
@@ -218,9 +203,42 @@ export default {
       });
     },
     // 生成列表
-    handleRows() {
-      EosModel.getTableRows((res) => {
-        console.log(res)
+    handleRowsMint() {
+      const params = {
+        code: 'jinbankoneo1',
+        scope: 'jinbankoneo1',
+        table: 'debts',
+        lower_bound: 1,
+        upper_bound: 100,
+        json: true
+      }
+      EosModel.getTableRows(params, (res) => {
+        const list = res.rows.filter(v => v.owner === this.scatter.identity.accounts[0].name)
+        list.forEach((v) => {
+          v.ctime = toLocalTime(`${v.create_time}.000+0000`)
+        });
+        this.tableData = list;
+      })
+    },
+    // 获取做市池子
+    handleRowsMarket() {
+      const params = {
+        code: 'jinswap11111',
+        scope: 'jinswap11111',
+        table: 'markets',
+        json: true
+      }
+      EosModel.getTableRows(params, (res) => {
+        const list = res.rows || [];
+        list.forEach((v) => {
+          const sym0 = v.sym0.split(',');
+          v.symbol0 = sym0[1]; // 币种
+          v.decimal0 = sym0[0]; // 精度
+          const sym1 = v.sym1.split(',');
+          v.symbol1 = sym1[1]; // 币种
+          v.decimal1 = sym1[0]; // 精度
+        });
+        this.marketLists = list;
       })
     }
   }
@@ -240,6 +258,10 @@ export default {
       font-size: 20px;
       padding: 0 0 10px 0px;
       text-align: left;
+      .right{
+        float: right;
+        font-size: 16px;
+      }
     }
     .trxId{
       white-space: nowrap;

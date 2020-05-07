@@ -1,5 +1,6 @@
 
 import { EosModel } from '@/utils/eos';
+import moment from 'moment';
 
 // 登录
 export function login(vThis, cb) {
@@ -65,4 +66,10 @@ export function GetUrlPara() {
     params[arr[0]] = arr[1];
   }
   return params;
+}
+/**
+ * 时间戳转成本地时间
+ */
+export function toLocalTime(time) {
+  return moment(time).format('YYYY-MM-DD HH:mm:ss')
 }

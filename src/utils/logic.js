@@ -4,6 +4,7 @@ import { toFixed } from '@/utils/public';
 
 const config = {
   rate: 0.003, // 手续费 - 0.2%
+  MINIMUM_LIQUIDITY: 10000, // 最小流动性Token
 }
 
 // 算法逻辑
@@ -80,13 +81,13 @@ function dealPayToGet(inData) {
  * @param {*} inData
  * payNum1: 输入存币数量 - EOS
  * payNum2: 输入存币数量 - JIN
- * poolEos: EOS池子数量
- * poolJin: JIN池子数量
+ * poolSym0: EOS池子数量
+ * poolSym1: JIN池子数量
  * poolToken: 凭证数量
  */
-export function dealToken(inData) {
+export function dealTokenV1(inData) {
   // EOS价格
-  let eosPrice = inData.poolJin / inData.poolEos;
+  let eosPrice = inData.poolSym1 / inData.poolSym0;
       eosPrice = toFixed(eosPrice, 8);
   let payNum1 = Number(inData.payNum1);
   let payNum2 = Number(inData.payNum2);
@@ -96,34 +97,63 @@ export function dealToken(inData) {
     payNum1 = payNum2 / eosPrice;
   }
   const poolToken = inData.poolToken;
-  const poolEos = inData.poolEos;
+  const poolSym0 = inData.poolSym0;
   // 计算做市占比
-  const rate = Number(payNum1) / (Number(payNum1) + Number(poolEos));
+  const rate = Number(payNum1) / (Number(payNum1) + Number(poolSym0));
   const getToken = (Number(poolToken) * Number(rate)) / (1 - Number(rate));
+  // console.log(dealTokenV2(inData))
   return {
     payNum1,
     payNum2,
-    rate,
     getToken
+  }
+}
+export function dealToken(inData) {
+  let payNum1 = Number(inData.payNum1);
+  let payNum2 = Number(inData.payNum2);
+  if (inData.poolToken === 0) {
+    let getToken = Math.sqrt(inData.payNum1 * inData.payNum2) - config.MINIMUM_LIQUIDITY;
+        getToken = parseInt(parseInt);
+    return {
+      payNum1,
+      payNum2,
+      getToken,
+    }
+  }
+  // EOS价格
+  let eosPrice = inData.poolSym1 / inData.poolSym0;
+      eosPrice = toFixed(eosPrice, 8);
+  if (Number(payNum1)) {
+    payNum2 = payNum1 * eosPrice;
+  } else {
+    payNum1 = payNum2 / eosPrice;
+  }
+  const x = payNum1 * inData.poolToken / inData.poolSym0;
+  const y = payNum2 * inData.poolToken / inData.poolSym1;
+  const getToken = parseInt(Math.min(x, y));
+  return {
+    payNum1,
+    payNum2,
+    getToken,
   }
 }
 /**
  * 卖出Token赎回资产
  * @param {*} inData 
- * poolEos: EOS池子数量
- * poolJin: JIN池子数量
+ * poolSym0: EOS池子数量
+ * poolSym1: JIN池子数量
  * poolToken: 池子总凭证
  * sellToken: 卖出token数量
  */
 export function sellToken(inData) {
   const poolToken = inData.poolToken;
   const sellToken = Number(inData.sellToken);
-  const poolEos = inData.poolEos;
-  const poolJin = inData.poolJin;
+  const poolSym0 = inData.poolSym0;
+  const poolSym1 = inData.poolSym1;
   // 计算卖出比率
   const rate = sellToken / poolToken;
-  let getNum1 = poolEos * rate;
-  let getNum2 = poolJin * rate;
+  let getNum1 = poolSym0 * rate;
+  let getNum2 = poolSym1 * rate;
   return {
     getNum1,
     getNum2

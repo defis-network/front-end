@@ -8,7 +8,9 @@
     <el-form  v-if="index === 1" class="formDiv" ref="formBorrow" label-width="75px">
       <!-- 抵押数量 -->
       <el-form-item label="抵押数量">
-        <el-input v-model="stakeNum" @input="handleGetNum" type="number" clearable>
+        <el-input v-model="stakeNum"
+          @focus="handleIptFocus('stake')"
+          @input="handleGetNum" @blur="handleInputBlur('stake')" type="number" clearable>
           <span slot="suffix">EOS</span>
         </el-input>
         <!-- 余额 -->
@@ -18,7 +20,9 @@
       </el-form-item>
       <!-- 生成总额 -->
       <el-form-item label="生成总额" style="margin-top: 5px">
-        <el-input v-model="generateNum" @input="handleGetTransNum" type="number" clearable>
+        <el-input v-model="generateNum"
+          @focus="handleIptFocus('mint')"
+          @input="handleGetTransNum" @blur="handleInputBlur('mint')" type="number" clearable>
           <span slot="suffix">JIN</span>
         </el-input>
       </el-form-item>
@@ -94,7 +98,7 @@ export default {
         quantity: `${this.stakeNum} EOS`
       }
       EosModel.transfer(params, (res) => {
-        if(res) {
+        if(res.code) {
           this.$message({
             message: res.message,
             type: 'error'
@@ -118,6 +122,21 @@ export default {
       const allPrice = this.generateNum * 3;
       const stakeNum = allPrice / this.price;
       this.stakeNum = toFixed(stakeNum, 4);
+    },
+    handleInputBlur(type) {
+      if (type === 'stake') {
+        this.stakeNum = toFixed(this.stakeNum, 4);
+        return
+      }
+      this.generateNum = toFixed(this.generateNum, 4);
+    },
+    handleIptFocus(type) {
+      const n = type === 'stake' ? Number(this.stakeNum) : Number(this.generateNum);
+      if (!n) {
+        type === 'stake' ? this.stakeNum = '' : this.generateNum = '';
+        return
+      }
+      type === 'stake' ? this.stakeNum = Number(this.stakeNum) : this.generateNum = Number(this.generateNum);
     }
   }
 }

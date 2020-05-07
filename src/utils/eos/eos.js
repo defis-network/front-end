@@ -303,24 +303,15 @@ class model {
 /*
 * 获取 getTableRows
 */
-async getTableRows(callback) {
+async getTableRows(obj, callback) {
   const formName = this.accountReset();
-  const params = {
-    "code": "jinbankoneo1",
-    "scope": "jinbankoneo1",
-    "table": "debts",
-    lower_bound: 1,
-    upper_bound: 100,
-    json: true
-  };
+  const params = obj;
   // 配置
   if (!this.EosJsUse) {
     await this.chainNodeInit('eos')
   }
   this.EosJsUse.getTableRows(params).then((rammarket) => {
-    console.log(formName)
-    const newList = rammarket.rows.filter(v => v.owner === formName)
-    callback(newList)
+    callback(rammarket)
   }).catch((e) => {
     this.errorCall(e, callback);
   });
@@ -435,7 +426,7 @@ async getTableRows(callback) {
             permission,
           }],
           data: {
-            id: obj.id,
+            debtid: obj.id,
           }
         }
       ]
@@ -448,6 +439,25 @@ async getTableRows(callback) {
       this.freeCpuTransaction(params, callback);
       return;
     }
+    this.scatterEosJs.transaction(params).then(callback).catch((e) => {
+      console.log(e)
+      this.errorCall(e, callback);
+    });
+  }
+
+  // 直接执行操作
+  async toTransaction(obj, callback) {
+    const params = obj;
+    if (!this.scatterEosJs) {
+      await this.chainNodeInit(this.chainName);
+    }
+    // 免费CPU
+    if (obj.useFreeCpu && this.chainName === 'eos') {
+      delete params.useFreeCpu;
+      this.freeCpuTransaction(params, callback);
+      return;
+    }
+    console.log(params)
     this.scatterEosJs.transaction(params).then(callback).catch((e) => {
       console.log(e)
       this.errorCall(e, callback);
@@ -516,6 +526,7 @@ async getTableRows(callback) {
 
   //  catch 错误回调
   errorCall(e, callback) {
+    console.log(e)
     const self = this;
     const scatapp = store.state.app.scatter;
     let back = {
