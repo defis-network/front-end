@@ -2,6 +2,8 @@
   <div class="swapTrade">
     <!-- <div>Trade</div> -->
     <div class="trade">
+      <market-lists-com :thisMarket="thisMarket" :marketLists="marketLists"
+        @listenMarketChange="handleSelectThis" />
       <el-form ref="formBorrow" label-width="75px">
         <!-- 抵押数量 -->
         <el-form-item label="支付数量" style="margin-bottom: 0">
@@ -9,13 +11,13 @@
                     @input="handleInBy('pay')"
                     @focus="handleFocus('pay')"
                     @blur="handleBlur('pay')">
-            <template v-if="!direction" slot="prepend">EOS</template>
-            <template v-else slot="prepend">JIN</template>
+            <template v-if="!direction" slot="prepend">{{ thisMarket.symbol0 }}</template>
+            <template v-else slot="prepend">{{ thisMarket.symbol1 }}</template>
           </el-input>
           <!-- 余额 -->
           <div class="balance">
-            <span v-if="!direction">余额：{{balanceEos}} EOS</span>
-            <span v-else>余额：{{balanceJin}} JIN</span>
+            <span v-if="!direction">余额：{{balanceSym0}} {{ thisMarket.symbol0 }}</span>
+            <span v-else>余额：{{balanceSym1}} {{ thisMarket.symbol1 }}</span>
           </div>
         </el-form-item>
         <!-- 互换 -->
@@ -28,33 +30,14 @@
                     @input="handleInBy('get')"
                     @focus="handleFocus('get')"
                     @blur="handleBlur('get')">
-            <template v-if="!direction" slot="prepend">JIN</template>
-            <template v-else slot="prepend">EOS</template>
+            <template v-if="!direction" slot="prepend">{{ thisMarket.symbol1 }}</template>
+            <template v-else slot="prepend">{{ thisMarket.symbol0 }}</template>
           </el-input>
         </el-form-item>
         <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleSwapTrade">交易</el-button>
         <el-button class="btn" type="primary" v-else @click="handleLogin">请先登录</el-button>
       </el-form>
     </div>
-
-    <el-drawer
-      :visible.sync="drawer"
-      :with-header="false"
-      direction="btt">
-      <div class="drawer">
-        <div class="title">
-          <span>自定义标题</span>
-          <span class="close">关闭</span>
-        </div>
-        <div class="searchDiv">放搜索框</div>
-        <div class="lists">
-          <div class="list">放通证列表</div>
-          <div class="list">EOS</div>
-          <div class="list">NDX</div>
-          <div class="list">JIN</div>
-        </div>
-      </div>
-    </el-drawer>
   </div>
 </template>
 
@@ -63,9 +46,13 @@ import { mapState } from 'vuex'
 import { dealTrade } from '@/utils/logic';
 import { toFixed } from '@/utils/public';
 import { EosModel } from '@/utils/eos';
+import MarketListsCom from './MarketListsCom';
 
 export default {
   name: 'trade',
+  components: {
+    MarketListsCom
+  },
   data() {
     return {
       payNum: '0.0000',
@@ -73,17 +60,12 @@ export default {
       direction: false,
       drawer: false,
       thisMarket: {}, // 当前选中的做市池子
+      balanceSym0: '0.0000',
+      balanceSym1: '0.0000',
+      timer: null,
     }
   },
   props: {
-    balanceEos: {
-      type: String,
-      default: '0.0000'
-    },
-    balanceJin: {
-      type: String,
-      default: '0.0000'
-    },
     marketLists: {
       type: Array,
       default: function lists() {
@@ -104,6 +86,18 @@ export default {
       immediate: true,
       deep: true
     },
+    scatter: {
+      handler: function listen(newVal) {
+        if (newVal.identity) {
+          this.handleBalanTimer();
+        }
+      },
+      deep: true,
+      immediate: true,
+    },
+    thisMarket() {
+      this.handleBalanTimer();
+    }
   },
   computed:{
     ...mapState({
@@ -114,11 +108,49 @@ export default {
   },
   mounted() {
   },
+  beforeDestroy() {
+    clearInterval(this.timer)
+  },
   methods: {
-    handleShowDrawer(type = 'sym0') {
-      if (type === 'sym0') {
-        this.drawer = true;
+    // 重启余额定时器
+    handleBalanTimer() {
+      clearInterval(this.timer);
+      this.handleGetBalance();
+      this.handleGetBalance('next');
+      this.timer = setInterval(() => {
+        this.handleGetBalance();
+        this.handleGetBalance('next');
+      }, 20000)
+    },
+    // 获取账户余额
+    async handleGetBalance(next) {
+      const params = {
+        code: this.thisMarket.contract0,
+        coin: this.thisMarket.symbol0,
+        decimal: this.thisMarket.decimal0
+      };
+      if (next) {
+        params.code = this.thisMarket.contract1;
+        params.coin = this.thisMarket.symbol1;
+        params.decimal = this.thisMarket.decimal1;
       }
+      await EosModel.getCurrencyBalance(params, res => {
+        let balance = '0.0000';
+        (!res || res.length === 0) ? balance = '0.0000' : balance = res.split(' ')[0];
+        if (next) {
+          this.balanceSym1 = balance;
+          return;
+        }
+        this.balanceSym0 = balance;
+      })
+    },
+    handleShowDrawer() {
+      this.drawer = true;
+    },
+    // 选择当前市场
+    handleSelectThis(item) {
+      this.thisMarket = item;
+      this.drawer = false;
     },
     handleLogin() {
       this.$emit('listenLogin', true)
@@ -135,7 +167,6 @@ export default {
       } else {
         inData.getNum = this.getNum;
       }
-      console.log(inData)
       const outData = dealTrade(inData);
       type === 'pay' ? this.getNum = toFixed(outData.getNum, 4) : this.payNum = toFixed(outData.payNum, 4);
       // this.getNum = outData.getNum;
@@ -175,6 +206,7 @@ export default {
           });
           return
         }
+        this.handleBalanTimer();
         this.$message({
           message: 'Transfer Success',
           type: 'success'
@@ -186,23 +218,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.swapTrade{
-  /deep/ .el-drawer{
-    height: 60% !important;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-  }
-  .drawer{
-    padding: 0 10px;
-    .title{
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 40px;
-    }
-  }
-}
-
 .trade{
   margin-top: 20px;
   /deep/ .el-input-group__prepend{

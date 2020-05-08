@@ -22,6 +22,8 @@ const sys = {
       },
       toAccountSwap: '',
       toAccountJin: '',
+      baseCoin: 'EOS', // 母币
+      baseCoinContract: 'eosio.token',
     },
     devConfig: { // 开发环境配置
       node: {
@@ -34,6 +36,8 @@ const sys = {
       },
       toAccountSwap: 'jinswap11111',
       toAccountJin: 'jinbankoneo1',
+      baseCoin: 'SYS', // 母币
+      baseCoinContract: 'eosio.token',
     },
     proConfig: { // 生产环境配置
       node: {
@@ -46,6 +50,8 @@ const sys = {
       },
       toAccountSwap: '',
       toAccountJin: '',
+      baseCoin: 'EOS', // 母币
+      baseCoinContract: 'eosio.token',
     }
   },
   mutations: {

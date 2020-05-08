@@ -11,11 +11,11 @@
         <el-input v-model="stakeNum"
           @focus="handleIptFocus('stake')"
           @input="handleGetNum" @blur="handleInputBlur('stake')" type="number" clearable>
-          <span slot="suffix">EOS</span>
+          <span slot="suffix">{{ baseConfig.baseCoin }}</span>
         </el-input>
         <!-- 余额 -->
         <div class="balance">
-          <span>余额：{{balanceEos}} EOS</span>
+          <span>余额：{{balanceEos}} {{ baseConfig.baseCoin }}</span>
         </div>
       </el-form-item>
       <!-- 生成总额 -->
@@ -29,13 +29,72 @@
       <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleTransfer">生成JIN</el-button>
       <el-button class="btn" type="primary" v-else @click="handleLogin">请先登录</el-button>
     </el-form>
+
+    <!-- 列表 -->
+    <div class="tableList">
+      <div class="title">
+        <span>生成记录</span>
+        <span class="right">余额: {{ balanceJin }} JIN</span>
+      </div>
+      <div class="lists">
+        <div class="list" v-for="(item, index) in tableData" :key="index">
+          <div class="left">
+            <div>{{ item.ctime }}</div>
+            <div>
+              <el-button type="danger" plain @click="handleRedeem(item)">赎回</el-button>
+              <el-button type="primary" v-if="!item.staked" plain @click="handleStake(item)">挖矿</el-button>
+              <el-button type="info" disabled v-else plain>挖矿中</el-button>
+            </div>
+          </div>
+          <div class="right">
+            <div>
+              <div>抵押数量</div>
+              <div class="num">{{ item.pledge }}</div>
+            </div>
+            <div>
+              <div>抵押数量</div>
+              <div class="num">{{ item.issue }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <el-table
+        v-if="false"
+        :data="tableData"
+        stripe
+        style="width: 100%">
+        <el-table-column
+          prop="ctime"
+          label="日期"
+          width="160">
+        </el-table-column>
+        <el-table-column
+          prop="pledge"
+          label="抵押数量(EOS)"
+          width="140">
+        </el-table-column>
+        <el-table-column
+          prop="issue"
+          label="生成数量(JIN)"
+          width="140">
+        </el-table-column>
+        <el-table-column
+        fixed="right"
+          label="操作">
+          <template slot-scope="props">
+            <el-button type="danger" plain @click="handleRedeem(props.row)">赎回</el-button>
+            <el-button type="primary" plain @click="handleStake(props.row)">挖矿</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 import { EosModel } from '@/utils/eos';
-import { toFixed } from '@/utils/public';
+import { toFixed, toLocalTime } from '@/utils/public';
 
 export default {
   name: 'borrow',
@@ -63,6 +122,10 @@ export default {
       price: 2.7600, // 价格
 
       index: 1, // 1 - 生成 | 2 - 偿还
+      balanceEos: '0.0000',
+      balanceJin: '0.0000',
+      timer: null,
+      tableData: [], // 生成记录
     }
   },
   computed:{
@@ -73,16 +136,136 @@ export default {
     })
   },
   props: {
-    balanceEos: {
-      type: String,
-      default: '0.0000'
-    },
-    balanceJin: {
-      type: String,
-      default: '0.0000'
+  },
+  watch: {
+    scatter: {
+      handler: function listen(newVal) {
+        if (newVal.identity) {
+          this.handleBalanTimer();
+        }
+      },
+      deep: true,
+      immediate: true,
     }
   },
+  beforeDestroy() {
+    clearInterval(this.timer)
+  },
   methods: {
+    // 重启余额定时器
+    handleBalanTimer() {
+      clearInterval(this.timer);
+      this.handleRowsMint();
+      this.handleGetBalance();
+      this.handleGetBalance('next');
+      this.timer = setInterval(() => {
+        this.handleGetBalance();
+        this.handleGetBalance('next');
+      }, 20000)
+    },
+    // 获取账户余额
+    async handleGetBalance(next) {
+      const params = {
+        code: this.baseConfig.baseCoinContract,
+        coin: this.baseConfig.baseCoin,
+        decimal: 4
+      };
+      if (next) {
+        params.code = this.baseConfig.toAccountJin;
+        params.coin = 'JIN';
+      }
+      await EosModel.getCurrencyBalance(params, res => {
+        if (!res || res.length === 0) {
+          this.balanceJin = 0;
+          return 0
+        }
+        const balance = res.split(' ')[0];
+        if (next) {
+          this.balanceJin = balance;
+          return;
+        }
+        this.balanceEos = balance;
+      })
+    },
+    // 生成列表
+    handleRowsMint() {
+      const params = {
+        code: this.baseConfig.toAccountJin,
+        scope: this.baseConfig.toAccountJin,
+        table: 'debts',
+        limit: 100,
+        json: true
+      }
+      EosModel.getTableRows(params, (res) => {
+        const list = res.rows.filter(v => v.owner === this.scatter.identity.accounts[0].name)
+        list.forEach((v) => {
+          v.ctime = toLocalTime(`${v.create_time}.000+0000`);
+          v.staked = !!Number(v.rex_received.split(' ')[0]);
+          v.ableRedeemDate = toLocalTime(`${v.rex_maturity}.000+0000`);
+          const redeemTime = new Date(v.ableRedeemDate).getTime(); // 解锁时间
+          const nowTime = new Date().getTime(); // 当前时间
+          console.log(v.ableRedeemDate, redeemTime)
+        });
+        this.tableData = list;
+      })
+    },
+    handleReg(item) {
+      const issue = item.issue.split(' ')[0]
+      if (Number(issue) > Number(this.balanceJin)) {
+        this.$message({
+          message: 'balance lower',
+          type: 'error'
+        })
+        return false;
+      }
+      return true
+    },
+    // 赎回
+    handleRedeem(item) {
+      if (!this.handleReg(item)) {
+        return
+      }
+      const params = {
+        code: this.baseConfig.toAccountJin,
+        toAccount: this.baseConfig.toAccountJin,
+        memo: `redeem: ${item.id}`,
+        quantity: item.issue
+      }
+      EosModel.transfer(params, (res) => {
+        if(res.code) {
+          this.$message({
+            message: res.message,
+            type: 'error'
+          });
+          return
+        }
+        this.handleBalanTimer();
+        this.$message({
+          message: 'Redeem Success',
+          type: 'success'
+        });
+      })
+    },
+    // 挖矿
+    handleStake(item) {
+      const params = {
+        id: item.id,
+      }
+      EosModel.stake(params, (res) => {
+        if(res.code) {
+          this.$message({
+            message: res.message,
+            type: 'error'
+          });
+          return
+        }
+        this.handleBalanTimer();
+        this.$message({
+          message: 'Stake Success',
+          type: 'success'
+        });
+      });
+    },
     // 百分比显示
     formatTooltip(val) {
       return `${val}%`;
@@ -93,10 +276,10 @@ export default {
     // 铸币
     handleTransfer() {
       const params = {
-        code: 'eosio.token',
+        code: this.baseConfig.baseCoinContract,
         toAccount: this.baseConfig.toAccountJin,
         memo: 'mint',
-        quantity: `${this.stakeNum} EOS`
+        quantity: `${this.stakeNum} ${this.baseConfig.baseCoin}`
       }
       EosModel.transfer(params, (res) => {
         if(res.code) {
@@ -106,6 +289,7 @@ export default {
           });
           return
         }
+        this.handleBalanTimer();
         this.$message({
           message: 'Transfer Success',
           type: 'success'
@@ -166,6 +350,47 @@ export default {
 
   .btn{
     width: 100%;
+  }
+}
+.tableList{
+  margin-top: 30px;
+  box-shadow: 0 0 5px 5px #fafafa;
+  padding: 10px 0;
+
+  .title{
+    font-size: 16px;
+    padding: 0 0 10px 0px;
+    text-align: left;
+    .right{
+      float: right;
+      font-size: 14px;
+    }
+  }
+  .trxId{
+    white-space: nowrap;
+    text-overflow:ellipsis;
+  }
+}
+.lists{
+  .list{
+    background: #fafafa;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    padding: 10px 8px;
+    font-size: 14px;
+    .left,.right{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 40px;
+    }
+    .right{
+      height: 60px;
+      text-align: left;
+      .num{
+        margin-top: 5px;
+      }
+    }
   }
 }
 </style>

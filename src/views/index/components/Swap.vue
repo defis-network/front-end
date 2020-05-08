@@ -5,6 +5,8 @@
       <span v-else class="toRepay" @click="index = 2">去取回></span>
     </div>
     <div class="swap" v-if="index === 1">
+      <market-lists-com :thisMarket="thisMarket" :marketLists="marketLists"
+        @listenMarketChange="handleSelectThis" />
       <el-form ref="formBorrow" label-width="75px">
         <!-- 抵押数量 -->
         <el-form-item label="存入资产">
@@ -13,28 +15,27 @@
                     @blur="handleIptBlur('pay')"
                     @input="handleInBy('pay')">
             <!-- <span slot="suffix">EOS</span> -->
-            <template slot="prepend">EOS</template>
+            <template slot="prepend">{{ thisMarket.symbol0 }}</template>
           </el-input>
           <!-- 余额 -->
           <div class="balance">
-            <span>余额：{{balanceEos}} EOS</span>
+            <span>余额：{{balanceSym0}} {{ thisMarket.symbol0 }}</span>
           </div>
           <el-input v-model="payNum2" type="number" clearable
                     @focus="handleIptFocus('get')"
                     @blur="handleIptBlur('get')"
                     @input="handleInBy('get')">
             <!-- <span slot="suffix">EOS</span> -->
-            <template slot="prepend">JIN</template>
+            <template slot="prepend">{{ thisMarket.symbol1 }}</template>
           </el-input>
           <!-- 余额 -->
           <div class="balance">
-            <span>余额：{{balanceJin}} JIN</span>
+            <span>余额：{{balanceSym1}} {{ thisMarket.symbol1 }}</span>
           </div>
         </el-form-item>
         <!-- 生成总额 -->
         <el-form-item label="凭证数量" style="margin-top: 5px">
           <el-input v-model="getToken" type="number" disabled clearable>
-            <!-- <span slot="suffix">JIN</span> -->
           </el-input>
         </el-form-item>
         <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleAddToken">存币</el-button>
@@ -43,9 +44,11 @@
     </div>
 
     <div class="swap" v-else>
+      <market-lists-com :thisMarket="thisMarket" :marketLists="marketLists"
+        @listenMarketChange="handleSelectThis" />
       <el-form ref="formBorrow" label-width="75px">
         <!-- 生成总额 -->
-        <el-form-item label="取回资产" style="margin-top: 5px">
+        <el-form-item label="取回资产">
           <el-input v-model="sellToken" type="number" clearable
                     @input="handleSellToken">
           </el-input>
@@ -56,13 +59,16 @@
         </el-form-item>
         <!-- 抵押数量 -->
         <el-form-item label="存入资产">
-          <el-input v-model="getNum1" type="number" disabled clearable>
-            <template slot="prepend">EOS</template>
-          </el-input>
-          <div>1</div>
-          <el-input v-model="getNum2" type="number" disabled clearable>
-            <template slot="prepend">JIN</template>
-          </el-input>
+          <div>
+            <el-input v-model="getNum1" type="number" disabled clearable>
+              <template slot="prepend">{{ thisMarket.symbol0 }}</template>
+            </el-input>
+          </div>
+          <div style="margin-top: 10px;">
+            <el-input v-model="getNum2" type="number" disabled clearable>
+              <template slot="prepend">{{ thisMarket.symbol1 }}</template>
+            </el-input>
+          </div>
         </el-form-item>
         <el-button class="btn" type="danger" v-if="scatter.identity" @click="handleToSell" plain>取币</el-button>
         <el-button class="btn" type="primary" v-else @click="handleLogin">请先登录</el-button>
@@ -76,9 +82,13 @@ import { mapState } from 'vuex';
 import { dealToken, sellToken } from '@/utils/logic';
 import { EosModel } from '@/utils/eos';
 import { toFixed } from '@/utils/public';
+import MarketListsCom from './MarketListsCom';
 
 export default {
   name: 'swap',
+  components: {
+    MarketListsCom
+  },
   data() {
     return {
       payNum1: '0.0000',
@@ -91,17 +101,12 @@ export default {
       token: '0',
 
       thisMarket: {}, // 当前选中的做市池子
+      balanceSym0: '0.0000',
+      balanceSym1: '0.0000',
+      timer: null,
     }
   },
   props: {
-    balanceEos: {
-      type: String,
-      default: '0.0000'
-    },
-    balanceJin: {
-      type: String,
-      default: '0.0000'
-    },
     marketLists: {
       type: Array,
       default: function lists() {
@@ -125,10 +130,15 @@ export default {
       handler: function listen(newVal) {
         if (newVal.identity) {
           this.handleGetAccToken();
+          this.handleBalanTimer();
         }
       },
       deep: true,
       immediate: true,
+    },
+    thisMarket() {
+      this.handleBalanTimer();
+      this.handleGetAccToken();
     }
   },
   computed:{
@@ -138,9 +148,48 @@ export default {
       baseConfig: state => state.sys.baseConfig, // 基础配置 - 默认为{}
     })
   },
+  beforeDestroy() {
+    clearInterval(this.timer)
+  },
   methods: {
     handleLogin() {
       this.$emit('listenLogin', true)
+    },
+    // 重启余额定时器
+    handleBalanTimer() {
+      clearInterval(this.timer);
+      this.handleGetBalance();
+      this.handleGetBalance('next');
+      this.timer = setInterval(() => {
+        this.handleGetBalance();
+        this.handleGetBalance('next');
+      }, 20000)
+    },
+    // 获取账户余额
+    async handleGetBalance(next) {
+      const params = {
+        code: this.thisMarket.contract0,
+        coin: this.thisMarket.symbol0,
+        decimal: this.thisMarket.decimal0
+      };
+      if (next) {
+        params.code = this.thisMarket.contract1;
+        params.coin = this.thisMarket.symbol1;
+        params.decimal = this.thisMarket.decimal1;
+      }
+      await EosModel.getCurrencyBalance(params, res => {
+        let balance = '0.0000';
+        (!res || res.length === 0) ? balance = '0.0000' : balance = res.split(' ')[0];
+        if (next) {
+          this.balanceSym1 = balance;
+          return;
+        }
+        this.balanceSym0 = balance;
+      })
+    },
+    // 选择当前市场
+    handleSelectThis(item) {
+      this.thisMarket = item;
     },
     handleIptFocus(type = 'pay') {
       const n = type === 'pay' ? Number(this.payNum1) : Number(this.payNum2);

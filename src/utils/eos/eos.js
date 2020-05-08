@@ -37,6 +37,10 @@ class model {
     this.toAccountSwap = store.state.sys.baseConfig.toAccountSwap;
     this.actor = this.env === 'production' ? '111.3' : '11111111aaaa'; // 1111
   }
+  getToAccount() { // 使用前重新获取最新账户
+    this.toAccountJin = store.state.sys.baseConfig.toAccountJin;
+    this.toAccountSwap = store.state.sys.baseConfig.toAccountSwap;
+  }
 
   vueThisInit(vt, chain) {
     this.vthis = vt;
@@ -398,6 +402,7 @@ async getTableRows(obj, callback) {
 
   // 挖坑
   async stake(obj, callback) {
+    this.getToAccount()
     const formName = this.accountReset();
     const permission = this.accountByScatter.authority;
     const params = {

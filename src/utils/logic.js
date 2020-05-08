@@ -40,7 +40,7 @@ export function dealTrade(inData) {
   // 计算1: 根据输入支付数量 计算 得到数量 成交价格 滑点
   // 计算2: 根据输入得到数量 计算 支付数量 成交价格 滑点
   const { payNum, getNum, aboutPrice } = dealPayToGet(inData); // 获得支付数量 & 得到数量
-  console.log({ payNum, getNum, aboutPrice })
+  // console.log({ payNum, getNum, aboutPrice })
   const slipPoint = (aboutPrice - jinPrice) / jinPrice; // 溢价率 =（当前价格-预估成交价）/ 当前价格
   return Object.assign(outData, {
     payNum, getNum, aboutPrice, slipPoint
