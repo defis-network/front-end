@@ -29,7 +29,7 @@ export default {
     handleEnvReLoad() {
       const urlData = GetUrlPara();
       const protocol = location.location;
-      if (urlData.env === 'dev' && protocol === 'https') {
+      if (urlData.env === 'dev' && protocol === 'https:') {
         location.href = `http://${location.host}`
       }
     },
