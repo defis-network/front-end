@@ -28,9 +28,10 @@ export default {
   methods: {
     handleEnvReLoad() {
       const urlData = GetUrlPara();
-      const protocol = location.location;
-      if (urlData.env === 'dev' && protocol === 'https:') {
+      const protocol = location.protocol;
+      if (urlData.env === '1dev' && protocol === 'https:') {
         location.href = `http://${location.host}`
+        // location.href = `http://www.baidu.com`
       }
     },
     handleEnvSet() {
