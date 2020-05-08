@@ -204,7 +204,7 @@ export default {
           v.ableRedeemDate = toLocalTime(`${v.rex_maturity}.000+0000`);
           const redeemTime = new Date(v.ableRedeemDate).getTime(); // 解锁时间
           const nowTime = new Date().getTime(); // 当前时间
-          console.log(v.ableRedeemDate, redeemTime)
+          v.ableRedeem = redeemTime <= nowTime;
         });
         this.tableData = list;
       })
