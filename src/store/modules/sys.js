@@ -20,9 +20,10 @@ const sys = {
         url: "https://api.testnet.eos.io/",
         chainId: "cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f",
       },
-      toAccountSwap: '', // 主交易 swap 合约
-      toAccountJin: '', // JIN 合约
-      toAccountByHyk: '', // 限量买HYK
+      toAccountSwap: 'jinswap11112', // 主交易 swap 合约
+      toAccountJin: ' jinbankoneo2', // JIN 合约
+      toAccountByHyk: 'jintokensell', // 限量买HYK
+      oracle: 'jinoracle113', // 价格合约
       hykContranct: '', // HYK 合约
       baseCoin: 'EOS', // 母币
       baseCoinContract: 'eosio.token',
@@ -36,10 +37,11 @@ const sys = {
         url: "http://183.250.89.179:58888",
         chainId: "cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f",
       },
-      toAccountSwap: 'jinswap11111', // 主交易 swap 合约
-      toAccountJin: 'jinbankoneo1', // JIN 合约
+      toAccountSwap: 'jinswap11112', // 主交易 swap 合约
+      toAccountJin: 'jinbankoneo2', // JIN 合约
       toAccountByHyk: 'jintokensell', // 限量买HYK
       hykContranct: 'jindaotokens', // HYK 合约
+      oracle: 'jinoracle113', // 价格合约
       baseCoin: 'SYS', // 母币
       baseCoinContract: 'eosio.token',
     },
@@ -56,6 +58,7 @@ const sys = {
       toAccountJin: '', // JIN 合约
       toAccountByHyk: '', // 限量买HYK
       hykContranct: '', // HYK 合约
+      oracle: '', // 价格合约
       baseCoin: 'EOS', // 母币
       baseCoinContract: 'eosio.token',
     }

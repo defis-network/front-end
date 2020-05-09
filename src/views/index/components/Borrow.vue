@@ -53,7 +53,7 @@
               <div class="num">{{ item.pledge }}</div>
             </div>
             <div>
-              <div>抵押数量</div>
+              <div class="txtRight">生成数量</div>
               <div class="num">{{ item.issue }}</div>
             </div>
           </div>
@@ -95,7 +95,7 @@ export default {
       userOpenStatusVo: { // 用户开仓状态
       },
       price: 2.7600, // 价格
-
+      priceTimer: null, // 价格定时器
       index: 1, // 1 - 生成 | 2 - 偿还
       balanceEos: '0.0000',
       balanceJin: '0.0000',
@@ -123,8 +123,16 @@ export default {
       immediate: true,
     }
   },
+  mounted() {
+    this.handleGetPrice();
+    clearInterval(this.priceTimer);
+    this.priceTimer = setInterval(() => {
+      this.handleGetPrice();
+    }, 10000)
+  },
   beforeDestroy() {
-    clearInterval(this.timer)
+    clearInterval(this.timer);
+    clearInterval(this.priceTimer);
   },
   methods: {
     // 重启余额定时器
@@ -162,6 +170,22 @@ export default {
         this.balanceEos = balance;
       })
     },
+    // 获取60秒均价
+    handleGetPrice() {
+      const params = {
+        code: this.baseConfig.oracle, // 'jinoracle113',
+        json: true,
+        limit: 2,
+        scope: '0',
+        table: 'avgprices',
+      }
+      EosModel.getTableRows(params, (res) => {
+        const list = res.rows || []
+        const t = list.find(v => v.key === 60)
+        this.price = toFixed(t.price1_avg_price / 10000, 4);
+        console.log(this.price)
+      })
+    },
     // 生成列表
     handleRowsMint() {
       const params = {
@@ -190,6 +214,14 @@ export default {
       })
     },
     handleReg(item) {
+      console.log(item)
+      if (!item.ableRedeem) {
+        this.$message({
+          type: 'info',
+          message: `挖矿中，将于 ${item.ableRedeemDate} 后可赎回`,
+        })
+        return;
+      }
       const issue = item.issue.split(' ')[0]
       if (Number(issue) > Number(this.balanceJin)) {
         this.$message({
@@ -383,6 +415,9 @@ export default {
       text-align: left;
       .num{
         margin-top: 5px;
+      }
+      .txtRight{
+        text-align: right;
       }
     }
   }

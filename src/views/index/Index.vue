@@ -12,6 +12,7 @@
         <borrow v-if="activeName === 'first'"
           @listenLogin="handleLogin" :balanceEos="balanceEos" :balanceJin="balanceJin"/>
         <trade v-if="activeName === 'second'"
+          @listenGetMarketsList="handleRowsMarket"
           @listenLogin="handleLogin" :balanceEos="balanceEos" :balanceJin="balanceJin"
           :marketLists="marketLists"/>
         <swap v-if="activeName === 'third'"
