@@ -400,7 +400,7 @@ async getTableRows(obj, callback) {
     return this.accountByScatter.name;
   }
 
-  // 挖坑
+  // 挖矿
   async stake(obj, callback) {
     this.getToAccount()
     const formName = this.accountReset();

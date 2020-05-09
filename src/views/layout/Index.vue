@@ -11,8 +11,10 @@
       </div>
     </div>
     <transition name="fade" mode="out-in">
-      <router-view @listenLogin="handleLogin"/>
+      <router-view class="content" @listenLogin="handleLogin"/>
     </transition>
+
+    <footer-div />
   </div>
 </template>
 
@@ -20,8 +22,13 @@
 import { login } from '@/utils/public';
 import { mapState } from 'vuex'
 import { EosModel } from '@/utils/eos';
+import FooterDiv from '@/components/FooterDiv';
 
 export default {
+  name: 'layout',
+  components: {
+    FooterDiv,
+  },
   data() {
     return {
     }
@@ -61,6 +68,13 @@ export default {
 .layout{
   width: 100%;
   margin: auto;
+  min-height: 100vh;
+  position: relative;
+  padding-bottom: 80px;
+  box-sizing: border-box;
+}
+.content{
+  padding-top: 50px;
 }
 .project{
   padding: 0px 10px;
@@ -68,10 +82,15 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: fixed;
+  width: 100%;
+  background: #FFF;
+  box-sizing: border-box;
+  height: 50px;
+  z-index: 1000;
+  box-shadow: 0 0 3px 3px #fafafa inset;
   .logo{
     padding-left: 5px;
-  }
-  .login{
   }
 }
 .account{

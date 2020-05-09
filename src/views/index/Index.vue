@@ -2,22 +2,25 @@
   <div class="main">
     <warm-tip />
     <div class="index">
-      <el-tabs v-model="activeName">
-        <el-tab-pane label="金库" name="first">
-          <borrow v-if="activeName === 'first'"
-            @listenLogin="handleLogin" :balanceEos="balanceEos" :balanceJin="balanceJin"/>
-        </el-tab-pane>
-        <el-tab-pane label="交易所" name="second">
-          <trade v-if="activeName === 'second'"
-            @listenLogin="handleLogin" :balanceEos="balanceEos" :balanceJin="balanceJin"
-            :marketLists="marketLists"/>
-        </el-tab-pane>
-        <el-tab-pane label="资金池" name="third">
-          <swap v-if="activeName === 'third'"
-            @listenLogin="handleLogin" :balanceEos="balanceEos" :balanceJin="balanceJin"
-            :marketLists="marketLists"/>
-        </el-tab-pane>
-      </el-tabs>
+      <div class="navTab">
+        <div :class="{'navTabActive': activeName === 'first'}" @click="activeName = 'first'"><span>金库</span></div>
+        <div :class="{'navTabActive': activeName === 'second'}" @click="activeName = 'second'"><span>交易所</span></div>
+        <div :class="{'navTabActive': activeName === 'third'}" @click="activeName = 'third'"><span>资金池</span></div>
+        <div :class="{'navTabActive': activeName === 'fourth'}" @click="activeName = 'fourth'"><span>HYK认购</span></div>
+      </div>
+      <div>
+        <borrow v-if="activeName === 'first'"
+          @listenLogin="handleLogin" :balanceEos="balanceEos" :balanceJin="balanceJin"/>
+        <trade v-if="activeName === 'second'"
+          @listenLogin="handleLogin" :balanceEos="balanceEos" :balanceJin="balanceJin"
+          :marketLists="marketLists"/>
+        <swap v-if="activeName === 'third'"
+          @listenLogin="handleLogin" :balanceEos="balanceEos" :balanceJin="balanceJin"
+          :marketLists="marketLists"/>
+        <buy-hyk v-if="activeName === 'fourth'"
+          @listenLogin="handleLogin" :balanceEos="balanceEos" :balanceJin="balanceJin"
+          :marketLists="marketLists"/>
+      </div>
     </div>
   </div>
 </template>
@@ -30,6 +33,7 @@ import WarmTip from '@/components/WarmTip';
 import Borrow from './components/Borrow';
 import Trade from './components/Trade';
 import Swap from './components/Swap';
+import BuyHyk from './components/BuyHyk';
 
 export default {
   name: 'index',
@@ -37,7 +41,8 @@ export default {
     WarmTip,
     Borrow,
     Trade,
-    Swap
+    Swap,
+    BuyHyk,
   },
   data() {
     return {
@@ -107,6 +112,47 @@ export default {
   border-radius: 5px;
   // box-shadow: 0 0 5px 5px #fafafa;
   padding: 0px 10px;
+
+  .navTab{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    font-size: 14px;
+    &::after{
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      bottom: 0px;
+      background: #E4E7ED;
+    }
+
+    &>div{
+      flex: 1;
+      color: #303133;
+      font-weight: 500;
+      &>span{
+        position: relative;
+        display: inline-block;
+        padding-bottom: 10px;
+      }
+      &.navTabActive{
+        &>span{
+          &::after{
+            content: '';
+            background-color: #409EFF;
+            height: 2px;
+            position: absolute;
+            width: 100%;
+            bottom: 0;
+            left: 0;
+            z-index: 1;
+          }
+        }
+      }
+    }
+  }
 
   .tab{
     display: flex;

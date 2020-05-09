@@ -1,7 +1,16 @@
 <template>
   <div class="swapTrade">
-    <!-- <div>Trade</div> -->
-    <div class="trade">
+    <div class="topDiv">
+      <div class="title">
+        <span v-if="index === 1">交易</span>
+        <span v-else>创建交易所</span>
+      </div>
+      <div class="link">
+        <span v-if="index !== 1" @click="index = 1">去交易></span>
+        <span v-else class="toRepay" @click="index = 2">去创建交易所></span>
+      </div>
+    </div>
+    <div class="trade" v-if="index === 1">
       <market-lists-com :thisMarket="thisMarket" :marketLists="marketLists"
         @listenMarketChange="handleSelectThis" />
       <el-form ref="formBorrow" label-width="75px">
@@ -38,6 +47,12 @@
         <el-button class="btn" type="primary" v-else @click="handleLogin">请先登录</el-button>
       </el-form>
     </div>
+
+    <div v-else>
+      <create-dex @listenLogin="handleLogin"
+        @listenGetMarketsList="handleRowsMarket"
+        :scatter="scatter" />
+    </div>
   </div>
 </template>
 
@@ -47,14 +62,17 @@ import { dealTrade } from '@/utils/logic';
 import { toFixed } from '@/utils/public';
 import { EosModel } from '@/utils/eos';
 import MarketListsCom from './MarketListsCom';
+import CreateDex from './CreateDex';
 
 export default {
   name: 'trade',
   components: {
-    MarketListsCom
+    MarketListsCom,
+    CreateDex
   },
   data() {
     return {
+      index: 1,
       payNum: '0.0000',
       getNum: '0.0000',
       direction: false,
@@ -112,6 +130,9 @@ export default {
     clearInterval(this.timer)
   },
   methods: {
+    handleRowsMarket() {
+      this.$emit('listenGetMarketsList', true)
+    },
     // 重启余额定时器
     handleBalanTimer() {
       clearInterval(this.timer);
@@ -218,8 +239,35 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.topDiv{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .title{
+    height: 40px;
+    line-height: 40px;
+    margin-top: 10px;
+    text-align: left;
+    &::before{
+      content: '';
+      position: relative;
+      margin-right: 6px;
+      border-left: 2px solid #409EFF;
+    }
+  }
+}
+.link{
+  text-align: right;
+  color: #409EFF;
+  font-size: 14px;
+  // margin-top: 15px;
+
+  .toRepay{
+    color: #409EFF;
+  }
+}
 .trade{
-  margin-top: 20px;
+  margin-top: 5px;
   /deep/ .el-input-group__prepend{
     width: 28px;;
   }

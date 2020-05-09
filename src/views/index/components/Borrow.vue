@@ -37,6 +37,7 @@
         <span class="right">余额: {{ balanceJin }} JIN</span>
       </div>
       <div class="lists">
+        <div class="noDate" v-if="!tableData.length">暂无数据</div>
         <div class="list" v-for="(item, index) in tableData" :key="index">
           <div class="left">
             <div>{{ item.ctime }}</div>
@@ -58,36 +59,10 @@
           </div>
         </div>
       </div>
-      <el-table
-        v-if="false"
-        :data="tableData"
-        stripe
-        style="width: 100%">
-        <el-table-column
-          prop="ctime"
-          label="日期"
-          width="160">
-        </el-table-column>
-        <el-table-column
-          prop="pledge"
-          label="抵押数量(EOS)"
-          width="140">
-        </el-table-column>
-        <el-table-column
-          prop="issue"
-          label="生成数量(JIN)"
-          width="140">
-        </el-table-column>
-        <el-table-column
-        fixed="right"
-          label="操作">
-          <template slot-scope="props">
-            <el-button type="danger" plain @click="handleRedeem(props.row)">赎回</el-button>
-            <el-button type="primary" plain @click="handleStake(props.row)">挖矿</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
     </div>
+
+    <!-- 赎回详情 -->
+    
   </div>
 </template>
 
@@ -193,7 +168,12 @@ export default {
         code: this.baseConfig.toAccountJin,
         scope: this.baseConfig.toAccountJin,
         table: 'debts',
-        limit: 100,
+        limit: 10,
+        lower_bound: this.scatter.identity.accounts[0].name,
+        upper_bound: this.scatter.identity.accounts[0].name,
+        key_type: 'i64',
+        index_position: 2,
+        table_key: 'byname',
         json: true
       }
       EosModel.getTableRows(params, (res) => {
@@ -354,10 +334,12 @@ export default {
 }
 .tableList{
   margin-top: 30px;
-  box-shadow: 0 0 5px 5px #fafafa;
+  // box-shadow: 0 0px 5px 5px #fafafa;
+  border-top: 3px solid #fafafa;
   padding: 10px 0;
 
   .title{
+    border-bottom: 1px solid #fafafa;
     font-size: 16px;
     padding: 0 0 10px 0px;
     text-align: left;
@@ -372,12 +354,24 @@ export default {
   }
 }
 .lists{
+  .noDate{
+    color: #999;
+    font-size: 14px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center
+  }
   .list{
     background: #fafafa;
     margin-bottom: 5px;
     border-radius: 5px;
     padding: 10px 8px;
     font-size: 14px;
+
+    &:last-child{
+      margin-bottom: 0px;
+    }
     .left,.right{
       display: flex;
       align-items: center;

@@ -48,7 +48,7 @@
         @listenMarketChange="handleSelectThis" />
       <el-form ref="formBorrow" label-width="75px">
         <!-- 生成总额 -->
-        <el-form-item label="取回资产">
+        <el-form-item label="销毁凭证">
           <el-input v-model="sellToken" type="number" clearable
                     @input="handleSellToken">
           </el-input>
@@ -58,7 +58,7 @@
           </div>
         </el-form-item>
         <!-- 抵押数量 -->
-        <el-form-item label="存入资产">
+        <el-form-item label="取回资产">
           <div>
             <el-input v-model="getNum1" type="number" disabled clearable>
               <template slot="prepend">{{ thisMarket.symbol0 }}</template>
@@ -356,6 +356,7 @@ export default {
   text-align: right;
   color: #409EFF;
   font-size: 14px;
+  margin-top: 15px;
 
   .toRepay{
     color: #f56c6c;
