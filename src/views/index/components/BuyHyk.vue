@@ -97,8 +97,8 @@ export default {
         price0_last: "3.39009999999999989",
         price1_cumulative_last: "6611699108",
         price1_last: "0.29490000000000000",
-        reserve0: "887.8629 EOS",
-        reserve1: "3010.0159 JIN",
+        reserve0: "100.0000 EOS",
+        reserve1: "1000.0000 HYK",
         sym0: "4,EOS",
         sym1: "4,JIN",
         symbol0: "EOS",
@@ -124,6 +124,23 @@ export default {
       const rate = (this.HykSellCount - this.HykAccountBalan) * 100 / this.HykSellCount;
       return Number(toFixed(rate, 2));
     }
+  },
+  created() {
+      const params = {
+        code: this.baseConfig.toAccountSwap,
+        scope: this.baseConfig.toAccountSwap,
+        table: 'markets',
+        json: true
+      }
+      EosModel.getTableRows(params, (res) => {
+        const list = res.rows || [];
+        list.forEach((v) => {
+          if(v.sym1 = "4,HYK") {
+            this.thisMarket = v;
+          }
+        });
+        this.marketLists = list;
+      })
   },
   watch: {
     marketLists: {

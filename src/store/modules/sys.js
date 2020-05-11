@@ -54,11 +54,11 @@ const sys = {
         url: 'https://api.eossweden.se',
         chainId: "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
       },
-      toAccountSwap: '', // 主交易 swap 合约
-      toAccountJin: '', // JIN 合约
-      toAccountByHyk: '', // 限量买HYK
-      hykContranct: '', // HYK 合约
-      oracle: '', // 价格合约
+      toAccountSwap: 'jinswapeosv1', // 主交易 swap 合约
+      toAccountJin: 'jinbankoneos', // JIN 合约
+      toAccountByHyk: 'jintokensell', // 限量买HYK
+      hykContranct: 'jindaotokens', // HYK 合约
+      oracle: 'jinoraclesv1', // 价格合约
       baseCoin: 'EOS', // 母币
       baseCoinContract: 'eosio.token',
     }
