@@ -372,7 +372,7 @@ async getTableRows(obj, callback) {
     const params = {
       code: obj.code,
       symbol: obj.coin,
-      account: this.accountReset()
+      account: obj.account || this.accountReset()
     };
     if (!this.EosJs) {
       await this.chainNodeInit(this.chainName || 'eos')

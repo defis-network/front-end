@@ -6,16 +6,29 @@
       <a href="#">Github</a>
     </div>
     <div class="right">
-      <span class="red">HYK分红</span>
+      <span class="red" @click="showBonus = true">HYK分红</span>
     </div>
+
+    <el-dialog
+      width="320px"
+      :visible.sync="showBonus">
+      <bonus />
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import Bonus from './Bonus';
+
 export default {
   name: 'footerDiv',
+  components: {
+    Bonus
+  },
   data() {
-    return{}
+    return{
+      showBonus: true,
+    }
   }
 }
 </script>
@@ -41,6 +54,10 @@ export default {
       cursor: pointer;
       color: #F56C6C;
     }
+  }
+
+  /deep/ .el-dialog__header{
+    padding: 0;
   }
 }
 </style>

@@ -4,6 +4,11 @@
     <div class="type">
       <div class="title">限量认购</div>
       <el-form class="formDiv" ref="formBorrow" label-width="75px">
+        <el-form-item label="认购进度">
+          <div class="progress">
+            <el-progress :text-inside="true" :stroke-width="16" :percentage="percentage" status="success"></el-progress>
+          </div>
+        </el-form-item>
         <!-- 抵押数量 -->
         <el-form-item label="购买金额">
           <el-input v-model="payNum"
@@ -76,6 +81,8 @@ export default {
       payNum2: '0.0000',
       getNum2: '0.0000',
       balanceEos: '0.0000',
+      HykAccountBalan: '300000.0000', // HYK账户剩余余额 HYK
+      HykSellCount: '300000', // HYK限量 30W
       price: 10,
       timer: null,
       thisMarket: {
@@ -99,14 +106,34 @@ export default {
       }
     }
   },
+  props: {
+    marketLists: {
+      type: Array,
+      default: function lists() {
+        return []
+      }
+    }
+  },
   computed:{
      ...mapState({
       // 箭头函数可使代码更简练
       scatter: state => state.app.scatter,
       baseConfig: state => state.sys.baseConfig, // 基础配置 - 默认为{}
-    })
+    }),
+    percentage() {
+      const rate = (this.HykSellCount - this.HykAccountBalan) * 100 / this.HykSellCount;
+      return Number(toFixed(rate, 2));
+    }
   },
   watch: {
+    marketLists: {
+      handler: function marketList(newVal) {
+        const market = newVal.find(item => item.contract1 === this.baseConfig.hykContranct && item.contract0 === this.baseConfig.baseCoinContract) || {}
+        this.thisMarket = market
+      },
+      immediate: true,
+      deep: true
+    },
     scatter: {
       handler: function listen(newVal) {
         if (newVal.identity) {
@@ -118,24 +145,41 @@ export default {
     }
   },
   methods: {
+    handleLogin() {
+      this.$emit('listenLogin', true);
+    },
     // 重启余额定时器
     handleBalanTimer() {
       clearInterval(this.timer);
+      this.handleGetBalance(this.baseConfig.toAccountByHyk)
       this.handleGetBalance();
       this.timer = setInterval(() => {
+        this.handleGetBalance(this.baseConfig.toAccountByHyk)
         this.handleGetBalance();
       }, 20000)
     },
     // 获取账户余额
-    async handleGetBalance() {
-      const params = {
+    async handleGetBalance(account) {
+      let params = {
         code: this.baseConfig.baseCoinContract,
         coin: 'EOS',
-        decimal: 4
+        decimal: 4,
       };
+      if (account) {
+        params = {
+          code: this.baseConfig.hykContranct,
+          coin: 'HYK',
+          decimal: 4,
+          account
+        }
+      }
       await EosModel.getCurrencyBalance(params, res => {
         if (!res || res.length === 0) {
           return 0
+        }
+        if (account) {
+          this.HykAccountBalan = res.split(' ')[0];
+          return;
         }
         const balance = res.split(' ')[0];
         this.balanceEos = balance;
@@ -284,6 +328,16 @@ export default {
 }
 .formDiv{
   margin-top: 20px;
+  .progress{
+    position: absolute;
+    width: 100%;
+    overflow: hidden;
+    top: 50%;
+    transform: translate(0, -50%);
+    /deep/ .el-progress-bar__outer{
+      border-radius: 2px;
+    }
+  }
   .balance{
     text-align: right;
     &>span{
