@@ -1,11 +1,11 @@
 
 import { EosModel } from '@/utils/eos';
 import moment from 'moment';
+import store from '@/store';
 
 // 登录
 export function login(vThis, cb) {
   EosModel.scatterInit(vThis, () => {
-    console.log('初始化完成')
     handleScatterOut(cb)
   });
 }
@@ -15,7 +15,23 @@ function handleScatterOut(cb) {
     EosModel.getIdentity('eos', (err => cb(err)));
   });
 }
-
+// 获取60秒均价
+export function getPrice(cb) {
+  const baseConfig = store.state.sys.baseConfig;
+  const params = {
+    code: baseConfig.oracle, // 'jinoracle113',
+    json: true,
+    limit: 2,
+    scope: '0',
+    table: 'avgprices',
+  }
+  EosModel.getTableRows(params, (res) => {
+    const list = res.rows || [];
+    const t = list.find(v => v.key === 60) || {};
+    const price = toFixed(t.price0_avg_price / 10000, 4);
+    cb(price);
+  })
+}
 
 // 科学计数法转数值 - 处理 1e-7 这类精度问题
 export function getFullNum(num) {
@@ -72,4 +88,26 @@ export function GetUrlPara() {
  */
 export function toLocalTime(time) {
   return moment(time).format('YYYY-MM-DD HH:mm:ss')
+}
+
+// 柯里化函数 - 多数据等待计算
+function newArr(length) {
+  var newArr = [...Object.keys(window).slice(0, length)].map(() => '')
+  return newArr
+}
+export function crazyCurryingHelper(fn, args) {
+  length = fn.length // fn所需的参数个数
+  args = args || newArr(length) // 已有参数 | 创建一个fn需要参数长度的数组
+  return function(...rest) {
+    let _args = args.slice();
+    rest.forEach((item, i) => {
+    if (item !== '') {
+        _args.splice(i, 1, item)
+    }
+  })
+  const nullLength = _args.filter(item => !item).length; // 缺少参数数量
+  return !nullLength // 递归的进行柯里化
+         ? fn.apply(this, _args)
+         : crazyCurryingHelper.call(this, fn, _args)
+  }
 }

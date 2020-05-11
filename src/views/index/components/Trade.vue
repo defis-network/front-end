@@ -96,7 +96,6 @@ export default {
       handler: function marketList(newVal) {
         if (!this.thisMarket.mid) {
           this.thisMarket = newVal[0];
-          console.log(this.thisMarket)
           return;
         }
         this.thisMarket = newVal.filter(v => v.mid === this.thisMarket.mid)

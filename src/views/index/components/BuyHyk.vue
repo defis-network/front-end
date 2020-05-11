@@ -115,7 +115,7 @@ export default {
     }
   },
   computed:{
-     ...mapState({
+    ...mapState({
       // 箭头函数可使代码更简练
       scatter: state => state.app.scatter,
       baseConfig: state => state.sys.baseConfig, // 基础配置 - 默认为{}
@@ -126,26 +126,12 @@ export default {
     }
   },
   created() {
-      const params = {
-        code: this.baseConfig.toAccountSwap,
-        scope: this.baseConfig.toAccountSwap,
-        table: 'markets',
-        json: true
-      }
-      EosModel.getTableRows(params, (res) => {
-        const list = res.rows || [];
-        list.forEach((v) => {
-          if(v.sym1 = "4,HYK") {
-            this.thisMarket = v;
-          }
-        });
-        this.marketLists = list;
-      })
   },
   watch: {
     marketLists: {
       handler: function marketList(newVal) {
-        const market = newVal.find(item => item.contract1 === this.baseConfig.hykContranct && item.contract0 === this.baseConfig.baseCoinContract) || {}
+        const market = newVal.find(item => item.contract1 === this.baseConfig.hykContranct
+                                        && item.contract0 === this.baseConfig.baseCoinContract) || {}
         this.thisMarket = market
       },
       immediate: true,

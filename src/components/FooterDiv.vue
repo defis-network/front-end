@@ -12,7 +12,7 @@
     <el-dialog
       width="320px"
       :visible.sync="showBonus">
-      <bonus />
+      <bonus v-if="showBonus"/>
     </el-dialog>
   </div>
 </template>
@@ -27,7 +27,7 @@ export default {
   },
   data() {
     return{
-      showBonus: true,
+      showBonus: false,
     }
   }
 }

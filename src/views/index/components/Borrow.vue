@@ -69,7 +69,7 @@
 <script>
 import { mapState } from 'vuex';
 import { EosModel } from '@/utils/eos';
-import { toFixed, toLocalTime } from '@/utils/public';
+import { toFixed, toLocalTime, getPrice } from '@/utils/public';
 
 export default {
   name: 'borrow',
@@ -172,18 +172,8 @@ export default {
     },
     // 获取60秒均价
     handleGetPrice() {
-      const params = {
-        code: this.baseConfig.oracle, // 'jinoracle113',
-        json: true,
-        limit: 2,
-        scope: '0',
-        table: 'avgprices',
-      }
-      EosModel.getTableRows(params, (res) => {
-        const list = res.rows || []
-        const t = list.find(v => v.key === 60)
-        this.price = toFixed(t.price1_avg_price / 10000, 4);
-        console.log(this.price)
+      getPrice((price) => {
+        this.price = price;
       })
     },
     // 生成列表
@@ -214,7 +204,6 @@ export default {
       })
     },
     handleReg(item) {
-      console.log(item)
       if (!item.ableRedeem) {
         this.$message({
           type: 'info',

@@ -25,6 +25,7 @@ const sys = {
       toAccountByHyk: 'jintokensell', // 限量买HYK
       oracle: 'jinoracle113', // 价格合约
       hykContranct: '', // HYK 合约
+      bonusAccount: 'jindaojindao', // 分红账号
       baseCoin: 'EOS', // 母币
       baseCoinContract: 'eosio.token',
     },
@@ -41,6 +42,7 @@ const sys = {
       toAccountJin: 'jinbankoneo2', // JIN 合约
       toAccountByHyk: 'jintokensell', // 限量买HYK
       hykContranct: 'jindaotokens', // HYK 合约
+      bonusAccount: 'jindaojindao', // 分红账号
       oracle: 'jinoracle113', // 价格合约
       baseCoin: 'SYS', // 母币
       baseCoinContract: 'eosio.token',
@@ -58,6 +60,7 @@ const sys = {
       toAccountJin: 'jinbankoneos', // JIN 合约
       toAccountByHyk: 'jintokensell', // 限量买HYK
       hykContranct: 'jindaotokens', // HYK 合约
+      bonusAccount: 'jindaojindao', // 分红账号
       oracle: 'jinoraclesv1', // 价格合约
       baseCoin: 'EOS', // 母币
       baseCoinContract: 'eosio.token',

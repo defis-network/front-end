@@ -41,7 +41,6 @@ export default {
   },
   mounted() {
     EosModel.scatterInit(this, () => {
-      console.log('init success')
     })
     // this.handleLogin()
   },
@@ -49,10 +48,7 @@ export default {
     // 登录
     handleLogin() {
       login(this, (err) => {
-        if (err) {
-          // this.$router.push('/');
-          console.log(err)
-        }
+        if (err) {}
       })
     },
     handleLoginOut() {

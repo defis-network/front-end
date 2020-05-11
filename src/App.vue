@@ -48,7 +48,7 @@ export default {
         config = this.devConfig;
       }
       this.$store.dispatch('setBaseConfig', config)
-      console.log(this.baseConfig)
+      // console.log(this.baseConfig)
     }
   },
 }
