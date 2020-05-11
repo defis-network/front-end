@@ -12,7 +12,7 @@
       </div>
       <div>
         <span>总估值</span>
-        <span class="totalValue">0.0000 USD</span>
+        <span class="totalValue">{{ totalValue }} USD</span>
       </div>
       <div>
         <span>总股份数</span>
@@ -41,7 +41,9 @@ export default {
       totalValue: '0.0000', // JIN = USD  |  EOS = USD * price
       sellHykAccBalan: '0.0000', // 限量卖HYK账户
       swapHykAccBalan: '0.0000', // swap合约内 HYK余额
+      jinFundsBalan: '0.0000', // 资金账户
       totalHykBonus: '0.0000', // 参与分红的HYK数量
+      supply: '0.0000', // 流通量
       perBonus: '0.0000',
       price: '0.0001',
       timer: null,
@@ -76,6 +78,7 @@ export default {
       this.handleGetHykStats();
       this.handleGetBalance('HYK');
       this.handleGetBalance('HYK Swap')
+      this.handleGetBalance('HYK Funds');
     },
     handleStartGetBalan() {
       clearTimeout(this.timer);
@@ -121,6 +124,14 @@ export default {
           account: this.baseConfig.toAccountSwap,
         }
       }
+      if (type === 'HYK Funds') {
+        params = { // swap 合约中 HYK余额
+          code: this.baseConfig.hykContranct,
+          coin: 'HYK',
+          decimal: 4,
+          account: this.baseConfig.teamFunds,
+        }
+      }
       await EosModel.getCurrencyBalance(params, res => {
         let balance = '0.0000'
         if (!res || res.length === 0) {
@@ -137,6 +148,11 @@ export default {
           this.swapHykAccBalan = balance;
           this.hykCurrying = this.hykCurrying('', '', balance);
           return;
+        }
+        if (type === 'HYK Funds') {
+          this.jinFundsBalan = balance;
+          this.hykCurrying = this.hykCurrying('', '', '', balance);
+          return
         }
         if (type === 'next') {
           this.balanceJin = balance;
@@ -159,8 +175,8 @@ export default {
         return;
       }
       const res = result.data['HYK'];
-      this.maxSupply = res.max_supply.split(' ')[0];
-      this.hykCurrying = this.hykCurrying(this.maxSupply);
+      this.supply = res.supply.split(' ')[0];
+      this.hykCurrying = this.hykCurrying(this.supply);
     },
     // 获取jiage
     handleGetPrice() {
@@ -170,8 +186,8 @@ export default {
       })
     },
     // 计算参与股份
-    handleBonusCount(maxSupply, sellHykAccBalan, swapHykAccBalan) {
-      const totalHykBonus = maxSupply - sellHykAccBalan - swapHykAccBalan;
+    handleBonusCount(supply, sellHykAccBalan, swapHykAccBalan, jinFundsBalan) {
+      const totalHykBonus = supply - sellHykAccBalan - swapHykAccBalan - jinFundsBalan;
       this.totalHykBonus = toFixed(totalHykBonus, 4);
       this.perCurrying = this.perCurrying('', this.totalHykBonus);
     },

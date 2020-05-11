@@ -28,6 +28,7 @@ const sys = {
       bonusAccount: 'jindaojindao', // 分红账号
       baseCoin: 'EOS', // 母币
       baseCoinContract: 'eosio.token',
+      teamFunds: 'jinteamfunds', // 资金账户
     },
     devConfig: { // 开发环境配置
       node: {
@@ -46,6 +47,7 @@ const sys = {
       oracle: 'jinoracle113', // 价格合约
       baseCoin: 'SYS', // 母币
       baseCoinContract: 'eosio.token',
+      teamFunds: 'jinteamfunds', // 资金账户
     },
     proConfig: { // 生产环境配置
       node: {
@@ -64,6 +66,7 @@ const sys = {
       oracle: 'jinoraclesv1', // 价格合约
       baseCoin: 'EOS', // 母币
       baseCoinContract: 'eosio.token',
+      teamFunds: 'jinteamfunds', // 资金账户
     }
   },
   mutations: {

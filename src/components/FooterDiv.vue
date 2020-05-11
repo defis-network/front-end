@@ -6,7 +6,7 @@
       <a href="https://github.com/jin-network" target="_blank">Github</a>
     </div>
     <div class="right">
-      <span class="red" @click="showBonus = true">HYK分红</span>
+      <span class="red" @click="showBonus = true">HYK DAO</span>
     </div>
 
     <el-dialog
