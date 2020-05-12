@@ -1,8 +1,14 @@
 <template>
   <div>
-    <div class="link">
-      <span v-if="index !== 1" @click="index = 1">去存入></span>
-      <span v-else class="toRepay" @click="index = 2">去取回></span>
+    <div class="topDiv">
+      <div class="title">
+        <span v-if="index === 1">存入资金</span>
+        <span v-else>取回资金</span>
+      </div>
+      <div class="link">
+        <span v-if="index !== 1" @click="index = 1">去存入></span>
+        <span v-else class="toRepay" @click="index = 2">去取回></span>
+      </div>
     </div>
     <div class="swap" v-if="index === 1">
       <market-lists-com :thisMarket="thisMarket" :marketLists="marketLists"
@@ -352,18 +358,35 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.topDiv{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 5px;
+  .title{
+    height: 40px;
+    line-height: 40px;
+    text-align: left;
+    &::before{
+      content: '';
+      position: relative;
+      margin-right: 6px;
+      border-left: 2px solid #409EFF;
+    }
+  }
+}
 .link{
   text-align: right;
   color: #409EFF;
   font-size: 14px;
-  margin-top: 15px;
+  // margin-top: 15px;
 
   .toRepay{
     color: #f56c6c;
   }
 }
 .swap{
-  margin-top: 20px;
+  margin-top: 5px;
   /deep/ .el-input-group__prepend{
     width: 28px;;
   }

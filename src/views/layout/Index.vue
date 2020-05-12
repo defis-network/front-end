@@ -3,17 +3,16 @@
     <div class="project">
       <span class="logo">JIN-Network</span>
       <span class="login" v-if="!scatter.identity">
-        <el-button class="btn" type="primary" plain round @click="handleLogin">connect to Wallet</el-button>
+        <el-button class="btn" type="primary" plain round @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
       </span>
       <div class="account" v-else>
-        <span class="name">账户：{{ scatter.identity.accounts[0].name }}</span>
-        <span class="loginOut" @click="handleLoginOut">退出</span>
+        <span class="name">{{ $t('public.account') }}：{{ scatter.identity.accounts[0].name }}</span>
+        <span class="loginOut" @click="handleLoginOut">{{ $t('public.loginOut') }}</span>
       </div>
     </div>
     <transition name="fade" mode="out-in">
       <router-view class="content" @listenLogin="handleLogin"/>
     </transition>
-
     <footer-div />
   </div>
 </template>
@@ -47,9 +46,7 @@ export default {
   methods: {
     // 登录
     handleLogin() {
-      login(this, (err) => {
-        if (err) {}
-      })
+      login(this, () => {})
     },
     handleLoginOut() {
       EosModel.accountLoginOut(() => {

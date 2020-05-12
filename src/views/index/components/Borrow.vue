@@ -1,13 +1,9 @@
 <template>
   <div class="borrow">
-    <!-- <div class="link">
-      <span v-if="index !== 1" @click="index = 1">去生成></span>
-      <span v-else class="toRepay" @click="index = 2">去偿还></span>
-    </div> -->
     <!-- 生成 -->
     <el-form  v-if="index === 1" class="formDiv" ref="formBorrow" label-width="75px">
       <!-- 抵押数量 -->
-      <el-form-item label="抵押数量">
+      <el-form-item :label="$t('bank.stakeNum')">
         <el-input v-model="stakeNum"
           @focus="handleIptFocus('stake')"
           @input="handleGetNum" @blur="handleInputBlur('stake')" type="number" clearable>
@@ -15,11 +11,11 @@
         </el-input>
         <!-- 余额 -->
         <div class="balance">
-          <span>余额：{{balanceEos}} {{ baseConfig.baseCoin }}</span>
+          <span>{{ $t('public.balance') }}：{{balanceEos}} {{ baseConfig.baseCoin }}</span>
         </div>
       </el-form-item>
       <!-- 生成总额 -->
-      <el-form-item label="生成总额" style="margin-top: 5px">
+      <el-form-item :label="$t('bank.borrowNum')" style="margin-top: 5px">
         <el-input v-model="generateNum"
           @focus="handleIptFocus('mint')"
           @input="handleGetTransNum" @blur="handleInputBlur('mint')" type="number" clearable>
@@ -99,7 +95,6 @@ export default {
       index: 1, // 1 - 生成 | 2 - 偿还
       balanceEos: '0.0000',
       balanceJin: '0.0000',
-      timer: null,
       tableData: [], // 生成记录
     }
   },
@@ -158,11 +153,12 @@ export default {
         params.coin = 'JIN';
       }
       await EosModel.getCurrencyBalance(params, res => {
+        let balance = '0.0000';
         if (!res || res.length === 0) {
-          this.balanceJin = 0;
-          return 0
+          balance = '0.0000'
+        } else {
+          balance = res.split(' ')[0];
         }
-        const balance = res.split(' ')[0];
         if (next) {
           this.balanceJin = balance;
           return;

@@ -24,8 +24,26 @@ export default {
   created() {
     this.handleEnvReLoad()
     this.handleEnvSet();
+    this.handleGetPhoneLanguage();
   },
   methods: {
+    // 第一次使用dapp时，获取手机语言
+    handleGetPhoneLanguage() {
+      const lang = localStorage.getItem('language')
+      if (lang) {
+        return;
+      }
+      if (navigator.language) {
+        this.language = navigator.language;
+      } else {
+        this.language = navigator.browserLanguage;
+      }
+      if (this.language !== 'zh-CN' && this.language !== 'zh-TW' && this.language !== 'ko') {
+        this.language = 'en';
+      }
+      this.$i18n.locale = this.language;
+      this.$store.dispatch('setLanguage', this.language);
+    },
     handleEnvReLoad() {
       const urlData = GetUrlPara();
       const protocol = location.protocol;

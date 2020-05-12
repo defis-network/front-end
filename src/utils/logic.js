@@ -43,7 +43,7 @@ export function dealTrade(inData) {
   // console.log({ payNum, getNum, aboutPrice })
   const slipPoint = (aboutPrice - jinPrice) / jinPrice; // 溢价率 =（当前价格-预估成交价）/ 当前价格
   return Object.assign(outData, {
-    payNum, getNum, aboutPrice, slipPoint
+    payNum, getNum, aboutPrice, slipPoint 
   });
 }
 
@@ -66,12 +66,16 @@ function dealPayToGet(inData) {
     let byNum = payPool - payMainPool; // 实际用于交易的数量 - 去除手续费后的支付金额
     payNum = byNum / (1 - config.rate);
   }
-  aboutPrice = inData.direction ? getNum / payNum : payNum / getNum; // 计算出预估成交价 - EOS/JIN
+  aboutPrice = payNum / getNum; // 计算出预估成交价 - payCoin/getCoin
+  // const aboutPriceSym0 = getNum / payNum; // pay Coin Price
+  // const aboutPriceSym1 = payNum / getNum; // get Coin Price
 
   return {
     payNum,
     getNum,
-    aboutPrice
+    aboutPrice,
+    // aboutPriceSym0,
+    // aboutPriceSym1
   }
 }
 

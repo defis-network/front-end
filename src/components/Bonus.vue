@@ -1,7 +1,11 @@
 <template>
   <div class="bonus">
-    <div class="title">分红</div>
+    <div class="title">HYK DAO</div>
     <div class="list">
+      <div>
+        <span>DAO 账户</span>
+        <span class="account" @click="handleToBrowser">{{ baseConfig.bonusAccount }}</span>
+      </div>
       <div>
         <span>EOS 余额</span>
         <span class="">{{ balanceEos }} EOS</span>
@@ -30,7 +34,7 @@
 import axios from 'axios';
 import { mapState } from 'vuex';
 import { EosModel } from '@/utils/eos';
-import { crazyCurryingHelper, toFixed, getPrice } from "@/utils/public";
+import { crazyCurryingHelper, toFixed, getPrice, toBrowser } from "@/utils/public";
 
 export default {
   name: 'bonus',
@@ -69,6 +73,9 @@ export default {
     clearTimeout(this.timer);
   },
   methods: {
+    handleToBrowser() {
+      toBrowser(this.baseConfig.bonusAccount, 'eos', 'account');
+    },
     handleInitCurrying() {
       this.valueCurrying = crazyCurryingHelper(this.handleTotalValue);
       this.hykCurrying = crazyCurryingHelper(this.handleBonusCount);
@@ -221,6 +228,10 @@ export default {
       align-items: center;
       justify-content: space-between;
       height: 40px;
+
+      .account{
+        color: #409EFF !important;
+      }
 
       .balance{
         color: #67c23a;

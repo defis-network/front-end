@@ -1,10 +1,11 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css';
+import i18n from '@/utils/lang';
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import 'element-ui/lib/theme-chalk/index.css';
-import i18n from '@/utils/lang';
+import './utils/filters/index'
 
 Vue.config.productionTip = false
 // 国际化 - 语言

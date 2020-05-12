@@ -3,10 +3,10 @@
     <warm-tip />
     <div class="index">
       <div class="navTab">
-        <div :class="{'navTabActive': activeName === 'first'}" @click="activeName = 'first'"><span>金库</span></div>
-        <div :class="{'navTabActive': activeName === 'second'}" @click="activeName = 'second'"><span>交易所</span></div>
-        <div :class="{'navTabActive': activeName === 'third'}" @click="activeName = 'third'"><span>资金池</span></div>
-        <div :class="{'navTabActive': activeName === 'fourth'}" @click="activeName = 'fourth'"><span>HYK认购</span></div>
+        <div :class="{'navTabActive': activeName === 'first'}" @click="activeName = 'first'"><span>{{ $t('tab.bank') }}</span></div>
+        <div :class="{'navTabActive': activeName === 'second'}" @click="activeName = 'second'"><span>{{ $t('tab.dex') }}</span></div>
+        <div :class="{'navTabActive': activeName === 'third'}" @click="activeName = 'third'"><span>{{ $t('tab.pools') }}</span></div>
+        <div :class="{'navTabActive': activeName === 'fourth'}" @click="activeName = 'fourth'"><span>{{ $t('tab.hyk') }}</span></div>
       </div>
       <div>
         <borrow v-if="activeName === 'first'"
@@ -29,7 +29,7 @@
 <script>
 import { EosModel } from '@/utils/eos';
 import { mapState } from 'vuex'
-import { toLocalTime } from '@/utils/public';
+// import { toLocalTime } from '@/utils/public';
 import WarmTip from '@/components/WarmTip';
 import Borrow from './components/Borrow';
 import Trade from './components/Trade';

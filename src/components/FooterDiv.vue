@@ -10,6 +10,7 @@
     </div>
 
     <el-dialog
+      class="dialog"
       width="320px"
       :visible.sync="showBonus">
       <bonus v-if="showBonus"/>
@@ -58,6 +59,9 @@ export default {
 
   /deep/ .el-dialog__header{
     padding: 0;
+  }
+  /deep/ .el-dialog{
+    border-radius: 5px;
   }
 }
 </style>

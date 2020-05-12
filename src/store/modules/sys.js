@@ -52,10 +52,10 @@ const sys = {
     proConfig: { // 生产环境配置
       node: {
         area: 'production',
-        protocol: 'https',
-        host: 'api.eossweden.se',
+        protocol: 'http',
+        host: 'openapi.eos.ren',
         port: '443',
-        url: 'https://api.eossweden.se',
+        url: 'http://openapi.eos.ren',
         chainId: "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
       },
       toAccountSwap: 'jinswapeosv1', // 主交易 swap 合约

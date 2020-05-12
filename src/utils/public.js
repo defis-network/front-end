@@ -1,7 +1,45 @@
-
+import Decimal from 'decimal.js';
 import { EosModel } from '@/utils/eos';
 import moment from 'moment';
 import store from '@/store';
+
+/*
+ ** 加法函数，用来得到精确的加法结果
+ ** 返回值：arg1 + arg2的精确结果 Number 型
+*/
+export function accAdd(arg1, arg2) {
+  return new Decimal(arg1).add(new Decimal(arg2)).toNumber()
+}
+
+/*
+ ** 减法函数，用来得到精确的减法结果
+ ** 返回值：arg1 - arg2的精确结果 Number 型
+*/
+export function accSub(arg1, arg2) {
+  return new Decimal(arg1).sub(new Decimal(arg2)).toNumber();
+}
+
+/*
+ ** 乘法函数，用来得到精确的乘法结果
+ ** 返回值：arg1 * arg2的精确结果 Number 型
+*/
+export function accMul(arg1, arg2) {
+  if (!arg1 || !arg2) {
+    return 0
+  }
+  return new Decimal(arg1).mul(new Decimal(arg2)).toNumber();
+}
+
+/*
+ ** 除法函数，用来得到精确的除法结果
+ ** 返回值：arg1 / arg2的精确结果 Number 型
+*/
+export function accDiv(arg1, arg2) {
+  if (!arg1 || !arg2) {
+    return 0
+  }
+  return new Decimal(arg1).div(new Decimal(arg2)).toNumber();
+}
 
 // 登录
 export function login(vThis, cb) {
@@ -96,7 +134,7 @@ function newArr(length) {
   return newArr
 }
 export function crazyCurryingHelper(fn, args) {
-  length = fn.length // fn所需的参数个数
+  const length = fn.length // fn所需的参数个数
   args = args || newArr(length) // 已有参数 | 创建一个fn需要参数长度的数组
   return function(...rest) {
     let _args = args.slice();
@@ -110,4 +148,13 @@ export function crazyCurryingHelper(fn, args) {
          ? fn.apply(this, _args)
          : crazyCurryingHelper.call(this, fn, _args)
   }
+}
+
+// 跳转对应链上的区块浏览器 - id: txid | account , chain: 所属链 , type: 'tx' | 'account' | 'token'
+export function toBrowser(id, chain, type) {
+  let url = `${store.state.sys.blockBrowser.eos[type]}${id}`
+  if (chain && chain !== 'eos') {
+    url = `${store.state.sys.blockBrowser[chain][type]}${id}`;
+  }
+  location.href = url;
 }

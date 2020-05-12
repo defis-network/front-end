@@ -42,7 +42,31 @@
             <template v-if="!direction" slot="prepend">{{ thisMarket.symbol1 }}</template>
             <template v-else slot="prepend">{{ thisMarket.symbol0 }}</template>
           </el-input>
+          <div class="tradeRate">
+            <span>兑换率</span>
+            <span v-if="!direction">1 {{ thisMarket.symbol0 }} = {{ tradeInfo.aboutPrice | numberTofixed }} {{ thisMarket.symbol1 }}</span>
+            <span v-else>1 {{ thisMarket.symbol1 }} = {{ tradeInfo.aboutPrice | numberTofixed }} {{ thisMarket.symbol0 }}</span>
+          </div>
         </el-form-item>
+        <div class="infoDetail" v-if="Number(tradeInfo.aboutPrice) && false">
+          <div class="title">交易详情</div>
+          <div class="detail">
+            <div class="doing">您正在出售 XXX , 滑点是{{ tradeInfo.slipPoint }}</div>
+            <div class="setting">
+              <div>滑点保护  ? </div>
+              <div>
+                <span>1%</span>
+                <span>5%</span>
+                <span>10%</span>
+              </div>
+              <div>
+                <el-input v-model="slipPoint" type="number">
+                  <span slot="suffix" clearable>%</span>
+                </el-input>
+              </div>
+            </div>
+          </div>
+        </div>
         <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleSwapTrade">交易</el-button>
         <el-button class="btn" type="primary" v-else @click="handleLogin">请先登录</el-button>
       </el-form>
@@ -81,6 +105,8 @@ export default {
       balanceSym0: '0.0000',
       balanceSym1: '0.0000',
       timer: null,
+      tradeInfo: {}, // 交易详情
+      slipPoint: '',
     }
   },
   props: {
@@ -129,6 +155,12 @@ export default {
     clearInterval(this.timer)
   },
   methods: {
+    handleToFixed(n, l) {
+      if (Number(n)) {
+        return toFixed(Number(n), l || 4)
+      }
+      return ''
+    },
     handleRowsMarket() {
       this.$emit('listenGetMarketsList', true)
     },
@@ -188,6 +220,7 @@ export default {
         inData.getNum = this.getNum;
       }
       const outData = dealTrade(inData);
+      this.tradeInfo = outData;
       type === 'pay' ? this.getNum = toFixed(outData.getNum, 4) : this.payNum = toFixed(outData.payNum, 4);
       // this.getNum = outData.getNum;
       // this.payNum = outData.payNum;
@@ -196,6 +229,7 @@ export default {
       this.direction = !this.direction;
       this.payNum = '0.0000';
       this.getNum = '0.0000';
+      this.tradeInfo = {};
     },
     handleFocus(type = 'pay') {
       const num = type === 'pay' ? Number(this.payNum) : Number(this.getNum);
@@ -242,10 +276,10 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-top: 5px;
   .title{
     height: 40px;
     line-height: 40px;
-    margin-top: 10px;
     text-align: left;
     &::before{
       content: '';
@@ -277,6 +311,12 @@ export default {
       color: #409EFF;
     }
   }
+  .tradeRate{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #999;
+  }
   .balance{
     text-align: right;
     &>span{
@@ -286,6 +326,12 @@ export default {
 
   .btn{
     width: 100%;
+  }
+}
+.infoDetail{
+  font-size: 14px;
+  .title{
+    color: #F56C6C;
   }
 }
 
