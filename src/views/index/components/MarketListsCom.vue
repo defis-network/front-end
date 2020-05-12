@@ -2,7 +2,7 @@
   <div class="selectMarket">
     <!-- 选择市场 -->
     <el-form ref="formBorrow" label-width="75px">
-      <el-form-item label="选择市场" style="margin-bottom: 0">
+      <el-form-item :label="$t('dex.chooseMarket')" style="margin-bottom: 0">
         <div class="selectDiv" @click="handleShowDrawer">
           <span>{{ thisMarket.symbol0 }}/{{ thisMarket.symbol1 }}</span>
           <span class="iconfont icon-huaban29 select"></span>
@@ -18,8 +18,8 @@
       direction="btt">
       <div class="drawer">
         <div class="title">
-          <span>选择市场</span>
-          <span class="close" @click="drawer = false">关闭</span>
+          <span>{{ $t('dex.chooseMarket') }}</span>
+          <span class="close" @click="drawer = false">{{ $t('public.close') }}</span>
         </div>
         <!-- <div class="searchDiv">放搜索框</div> -->
         <div class="lists">

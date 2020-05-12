@@ -3,7 +3,7 @@
     <div class="project">
       <span class="logo">JIN-Network</span>
       <span class="login" v-if="!scatter.identity">
-        <el-button class="btn" type="primary" plain round @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
+        <el-button class="btn" type="primary" plain round @click="handleLogin">{{ $t('public.login') }}</el-button>
       </span>
       <div class="account" v-else>
         <span class="name">{{ $t('public.account') }}：{{ scatter.identity.accounts[0].name }}</span>

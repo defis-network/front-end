@@ -2,12 +2,12 @@
   <div class="swapTrade">
     <div class="topDiv">
       <div class="title">
-        <span v-if="index === 1">交易</span>
-        <span v-else>创建交易所</span>
+        <span v-if="index === 1">{{ $t('dex.trade') }}</span>
+        <span v-else>{{ $t('dex.createdDex') }}</span>
       </div>
       <div class="link">
-        <span v-if="index !== 1" @click="index = 1">去交易></span>
-        <span v-else class="toRepay" @click="index = 2">去创建交易所></span>
+        <span v-if="index !== 1" @click="index = 1">{{ $t('dex.toTrade') }}></span>
+        <span v-else class="toRepay" @click="index = 2">{{ $t('dex.toCreatedDex') }}></span>
       </div>
     </div>
     <div class="trade" v-if="index === 1">
@@ -15,7 +15,7 @@
         @listenMarketChange="handleSelectThis" />
       <el-form ref="formBorrow" label-width="75px">
         <!-- 抵押数量 -->
-        <el-form-item label="支付数量" style="margin-bottom: 0">
+        <el-form-item :label="$t('dex.payNum')" style="margin-bottom: 0">
           <el-input v-model="payNum" type="number" clearable
                     @input="handleInBy('pay')"
                     @focus="handleFocus('pay')"
@@ -25,8 +25,8 @@
           </el-input>
           <!-- 余额 -->
           <div class="balance">
-            <span v-if="!direction">余额：{{balanceSym0}} {{ thisMarket.symbol0 }}</span>
-            <span v-else>余额：{{balanceSym1}} {{ thisMarket.symbol1 }}</span>
+            <span v-if="!direction">{{ $t('public.balance') }}：{{balanceSym0}} {{ thisMarket.symbol0 }}</span>
+            <span v-else>{{ $t('public.balance') }}：{{balanceSym1}} {{ thisMarket.symbol1 }}</span>
           </div>
         </el-form-item>
         <!-- 互换 -->
@@ -34,7 +34,7 @@
           <span class="iconfont icon-huaban23 change" @click="handleExchange"></span>
         </div>
         <!-- 生成总额 -->
-        <el-form-item label="得到数量" style="margin-top: 5px">
+        <el-form-item :label="$t('dex.getNum')" style="margin-top: 5px">
           <el-input v-model="getNum" type="number" clearable
                     @input="handleInBy('get')"
                     @focus="handleFocus('get')"
@@ -43,7 +43,7 @@
             <template v-else slot="prepend">{{ thisMarket.symbol0 }}</template>
           </el-input>
           <div class="tradeRate">
-            <span>兑换率</span>
+            <span>{{ $t('dex.rate') }}</span>
             <span v-if="!direction">1 {{ thisMarket.symbol0 }} = {{ tradeInfo.aboutPrice | numberTofixed }} {{ thisMarket.symbol1 }}</span>
             <span v-else>1 {{ thisMarket.symbol1 }} = {{ tradeInfo.aboutPrice | numberTofixed }} {{ thisMarket.symbol0 }}</span>
           </div>
@@ -67,8 +67,8 @@
             </div>
           </div>
         </div>
-        <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleSwapTrade">交易</el-button>
-        <el-button class="btn" type="primary" v-else @click="handleLogin">请先登录</el-button>
+        <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleSwapTrade">{{ $t('dex.trade') }}</el-button>
+        <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
       </el-form>
     </div>
 

@@ -2,12 +2,12 @@
   <div>
     <div class="topDiv">
       <div class="title">
-        <span v-if="index === 1">存入资金</span>
-        <span v-else>取回资金</span>
+        <span v-if="index === 1">{{ $t('pools.depositFunds') }}</span>
+        <span v-else>{{ $t('pools.withdrawalFunds') }}</span>
       </div>
       <div class="link">
-        <span v-if="index !== 1" @click="index = 1">去存入></span>
-        <span v-else class="toRepay" @click="index = 2">去取回></span>
+        <span v-if="index !== 1" @click="index = 1">{{ $t('pools.toDeposit') }}></span>
+        <span v-else class="toRepay" @click="index = 2">{{ $t('pools.toWithdrawal') }}></span>
       </div>
     </div>
     <div class="swap" v-if="index === 1">
@@ -15,7 +15,7 @@
         @listenMarketChange="handleSelectThis" />
       <el-form ref="formBorrow" label-width="75px">
         <!-- 抵押数量 -->
-        <el-form-item label="存入资产">
+        <el-form-item :label="$t('pools.depositFunds')">
           <el-input v-model="payNum1" type="number" clearable
                     @focus="handleIptFocus('pay')"
                     @blur="handleIptBlur('pay')"
@@ -25,7 +25,7 @@
           </el-input>
           <!-- 余额 -->
           <div class="balance">
-            <span>余额：{{balanceSym0}} {{ thisMarket.symbol0 }}</span>
+            <span>{{ $t('public.balance') }}：{{balanceSym0}} {{ thisMarket.symbol0 }}</span>
           </div>
           <el-input v-model="payNum2" type="number" clearable
                     @focus="handleIptFocus('get')"
@@ -36,16 +36,16 @@
           </el-input>
           <!-- 余额 -->
           <div class="balance">
-            <span>余额：{{balanceSym1}} {{ thisMarket.symbol1 }}</span>
+            <span>{{ $t('public.balance') }}：{{balanceSym1}} {{ thisMarket.symbol1 }}</span>
           </div>
         </el-form-item>
         <!-- 生成总额 -->
-        <el-form-item label="凭证数量" style="margin-top: 5px">
+        <el-form-item :label="$t('pools.tokenNum')" style="margin-top: 5px">
           <el-input v-model="getToken" type="number" disabled clearable>
           </el-input>
         </el-form-item>
-        <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleAddToken">存币</el-button>
-        <el-button class="btn" type="primary" v-else @click="handleLogin">请先登录</el-button>
+        <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleAddToken">{{ $t('pools.depositFunds') }}</el-button>
+        <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
       </el-form>
     </div>
 
@@ -54,17 +54,17 @@
         @listenMarketChange="handleSelectThis" />
       <el-form ref="formBorrow" label-width="75px">
         <!-- 生成总额 -->
-        <el-form-item label="销毁凭证">
+        <el-form-item :label="$t('pools.destroyToken')">
           <el-input v-model="sellToken" type="number" clearable
                     @input="handleSellToken">
           </el-input>
           <!-- 余额 -->
           <div class="balance">
-            <span>凭证数量：{{token}}</span>
+            <span>{{ $t('pools.tokenNum') }}：{{token}}</span>
           </div>
         </el-form-item>
         <!-- 抵押数量 -->
-        <el-form-item label="取回资产">
+        <el-form-item :label="$t('pools.withdrawalFunds')">
           <div>
             <el-input v-model="getNum1" type="number" disabled clearable>
               <template slot="prepend">{{ thisMarket.symbol0 }}</template>
@@ -76,8 +76,8 @@
             </el-input>
           </div>
         </el-form-item>
-        <el-button class="btn" type="danger" v-if="scatter.identity" @click="handleToSell" plain>取币</el-button>
-        <el-button class="btn" type="primary" v-else @click="handleLogin">请先登录</el-button>
+        <el-button class="btn" type="danger" v-if="scatter.identity" @click="handleToSell" plain>{{ $t('pools.withdrawalFunds') }}</el-button>
+        <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
       </el-form>
     </div>
   </div>

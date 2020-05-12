@@ -2,15 +2,15 @@
   <div>
     <!-- 方式1: 现价认购 -->
     <div class="type">
-      <div class="title">限量认购</div>
+      <div class="title">{{ $t('hyk.limitBuy') }}</div>
       <el-form class="formDiv" ref="formBorrow" label-width="75px">
-        <el-form-item label="认购进度">
+        <el-form-item :label="$t('hyk.rate')">
           <div class="progress">
             <el-progress :text-inside="true" :stroke-width="16" :percentage="percentage" status="success"></el-progress>
           </div>
         </el-form-item>
         <!-- 抵押数量 -->
-        <el-form-item label="购买金额">
+        <el-form-item :label="$t('hyk.buyCount')">
           <el-input v-model="payNum"
             @focus="handleIptFocus('stake')"
             @input="handleGetNum" @blur="handleInputBlur('stake')" type="number" clearable>
@@ -18,26 +18,26 @@
           </el-input>
           <!-- 余额 -->
           <div class="balance">
-            <span>余额：{{balanceEos}} EOS</span>
+            <span>{{ $t('public.balance') }}：{{balanceEos}} EOS</span>
           </div>
         </el-form-item>
         <!-- 生成总额 -->
-        <el-form-item label="购买数量" style="margin-top: 5px">
+        <el-form-item :label="$t('hyk.buyNum')" style="margin-top: 5px">
           <el-input v-model="getNum"
             @focus="handleIptFocus('mint')"
             @input="handleGetTransNum" @blur="handleInputBlur('mint')" type="number" clearable>
             <span slot="suffix">HYK</span>
           </el-input>
         </el-form-item>
-        <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleTransfer">认购HYK</el-button>
-        <el-button class="btn" type="primary" v-else @click="handleLogin">请先登录</el-button>
+        <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleTransfer">{{ $t('hyk.buyHYK') }}</el-button>
+        <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
       </el-form>
     </div>
     <!-- 方式2: swap认购 -->
     <div class="type">
-      <div class="title">SWAP认购</div>
+      <div class="title">{{ $t('hyk.swapBuy') }}</div>
       <el-form class="formDiv" ref="formBorrow" label-width="75px">
-        <el-form-item label="购买金额" style="margin-bottom: 0;">
+        <el-form-item :label="$t('hyk.buyCount')" style="margin-bottom: 0;">
           <el-input v-model="payNum2"
             @focus="handleIptFocus2('stake')"
             @input="handleGetTransNum2('pay')" @blur="handleInputBlur2('stake')" type="number" clearable>
@@ -45,22 +45,22 @@
           </el-input>
           <!-- 余额 -->
           <div class="balance">
-            <span>余额：{{balanceEos}} EOS</span>
+            <span>{{ $t('public.balance') }}：{{balanceEos}} EOS</span>
           </div>
         </el-form-item>
         <div class="changeDiv">
           <span class="iconfont icon-huaban22 change"></span>
         </div>
         <!-- 生成总额 -->
-        <el-form-item label="购买数量" style="margin-top: 5px">
+        <el-form-item :label="$t('hyk.buyNum')" style="margin-top: 5px">
           <el-input v-model="getNum2"
             @focus="handleIptFocus2('mint')"
             @input="handleGetTransNum2('get')" @blur="handleInputBlur2('mint')" type="number" clearable>
             <span slot="suffix">HYK</span>
           </el-input>
         </el-form-item>
-        <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleTransferSwap">认购HYK</el-button>
-        <el-button class="btn" type="primary" v-else @click="handleLogin">请先登录</el-button>
+        <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleTransferSwap">{{ $t('hyk.buyHYK') }}</el-button>
+        <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
       </el-form>
     </div>
   </div>

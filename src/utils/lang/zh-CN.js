@@ -17,12 +17,16 @@ export default {
   },
   bank: {
     stakeNum: '抵押数量',
-    borrowNum: '生成总额',
+    borrowNum: '生成数量',
     borrowBtn: '生成JIN',
     record: '生成记录',
+    redeem: '赎回',
+    stake: '挖矿',
+    stakeing: '挖矿中',
   },
   dex: {
     trade: '交易',
+    createdDex: '创建交易所',
     toTrade: '去交易',
     toCreatedDex: '去创建交易所',
     chooseMarket: '选择市场',

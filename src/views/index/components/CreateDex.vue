@@ -2,20 +2,20 @@
   <div class="createDex">
     <el-form ref="formBorrow" label-width="75px">
       <!-- 抵押数量 -->
-      <el-form-item label="基础币种" style="margin-bottom: 0">
-        <el-input v-model="symnol0.contract" type="text" placeholder="合约地址" clearable></el-input>
-        <el-input class="mt10" v-model="symnol0.coinName" type="text" placeholder="币种名称" clearable></el-input>
-        <el-input class="mt10" v-model="symnol0.decimal" type="number" placeholder="币种精度" clearable></el-input>
+      <el-form-item :label="$t('dex.baseCoin')" style="margin-bottom: 0">
+        <el-input v-model="symnol0.contract" type="text" :placeholder="$t('dex.contract')" clearable></el-input>
+        <el-input class="mt10" v-model="symnol0.coinName" type="text" :placeholder="$t('dex.coinName')" clearable></el-input>
+        <el-input class="mt10" v-model="symnol0.decimal" type="number" :placeholder="$t('dex.coinDecimal')" clearable></el-input>
       </el-form-item>
 
       <!-- 生成总额 -->
-      <el-form-item label="计价币种" style="margin-top: 15px">
-        <el-input v-model="symnol1.contract" type="text" placeholder="合约地址" clearable></el-input>
-        <el-input class="mt10" v-model="symnol1.coinName" type="text" placeholder="币种名称" clearable></el-input>
-        <el-input class="mt10" v-model="symnol1.decimal" type="number" placeholder="币种精度" clearable></el-input>
+      <el-form-item :label="$t('dex.valuationCoin')" style="margin-top: 15px">
+        <el-input v-model="symnol1.contract" type="text" :placeholder="$t('dex.contract')"  clearable></el-input>
+        <el-input class="mt10" v-model="symnol1.coinName" type="text" :placeholder="$t('dex.coinName')" clearable></el-input>
+        <el-input class="mt10" v-model="symnol1.decimal" type="number" :placeholder="$t('dex.coinDecimal')" clearable></el-input>
       </el-form-item>
-      <el-button class="btn" type="primary" v-if="scatter.identity" @click="handleNewMarket" plain>创建交易所</el-button>
-      <el-button class="btn" type="primary" v-else @click="handleLogin">请先登录</el-button>
+      <el-button class="btn" type="primary" v-if="scatter.identity" @click="handleNewMarket" plain>{{ $t('dex.createdDex') }}</el-button>
+      <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
     </el-form>
   </div>
 </template>

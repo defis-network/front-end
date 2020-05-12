@@ -22,34 +22,34 @@
           <span slot="suffix">JIN</span>
         </el-input>
       </el-form-item>
-      <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleTransfer">生成JIN</el-button>
-      <el-button class="btn" type="primary" v-else @click="handleLogin">请先登录</el-button>
+      <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleTransfer">{{ $t('bank.borrowBtn') }}</el-button>
+      <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('bank.loginPls') }}</el-button>
     </el-form>
 
     <!-- 列表 -->
     <div class="tableList">
       <div class="title">
-        <span>生成记录</span>
-        <span class="right">余额: {{ balanceJin }} JIN</span>
+        <span>{{ $t('bank.record') }}</span>
+        <span class="right">{{ $t('public.balance') }}: {{ balanceJin }} JIN</span>
       </div>
       <div class="lists">
-        <div class="noDate" v-if="!tableData.length">暂无数据</div>
+        <div class="noDate" v-if="!tableData.length">{{ $t('public.noData') }}</div>
         <div class="list" v-for="(item, index) in tableData" :key="index">
           <div class="left">
             <div>{{ item.ctime }}</div>
             <div>
-              <el-button type="danger" plain @click="handleRedeem(item)">赎回</el-button>
-              <el-button type="primary" v-if="!item.staked" plain @click="handleStake(item)">挖矿</el-button>
-              <el-button type="info" disabled v-else plain>挖矿中</el-button>
+              <el-button type="danger" plain @click="handleRedeem(item)">{{ $t('bank.redeem') }}</el-button>
+              <el-button type="primary" v-if="!item.staked" plain @click="handleStake(item)">{{ $t('bank.stake') }}</el-button>
+              <el-button type="info" disabled v-else plain>{{ $t('bank.stakeing') }}</el-button>
             </div>
           </div>
           <div class="right">
             <div>
-              <div>抵押数量</div>
+              <div>{{ $t('bank.stakeNum') }}</div>
               <div class="num">{{ item.pledge }}</div>
             </div>
             <div>
-              <div class="txtRight">生成数量</div>
+              <div class="txtRight">{{ $t('bank.borrowNum') }}</div>
               <div class="num">{{ item.issue }}</div>
             </div>
           </div>
