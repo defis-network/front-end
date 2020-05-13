@@ -30,20 +30,20 @@ export function dealTrade(inData) {
   const outData = {
     eosPrice, // 当前EOS价格
     jinPrice, // 当前JIN价格
+    type: inData.type,
   }
   // 没有输入支付数量 & 得到数量时 - 返回默认配置
   if (!Number(inData.payNum) && !Number(inData.getNum)) {
     return outData;
   }
   // 计算当前pool不变量
-  
   // 计算1: 根据输入支付数量 计算 得到数量 成交价格 滑点
   // 计算2: 根据输入得到数量 计算 支付数量 成交价格 滑点
-  const { payNum, getNum, aboutPrice } = dealPayToGet(inData); // 获得支付数量 & 得到数量
+  const { payNum, getNum, aboutPrice, minOut } = dealPayToGet(inData); // 获得支付数量 & 得到数量
   // console.log({ payNum, getNum, aboutPrice })
-  const slipPoint = (aboutPrice - jinPrice) / jinPrice; // 溢价率 =（当前价格-预估成交价）/ 当前价格
+  const slipPoint = (aboutPrice - jinPrice) * 100 / jinPrice; // 溢价率 =（当前价格-预估成交价）/ 当前价格
   return Object.assign(outData, {
-    payNum, getNum, aboutPrice, slipPoint 
+    payNum, getNum, aboutPrice, slipPoint, minOut
   });
 }
 
@@ -67,15 +67,17 @@ function dealPayToGet(inData) {
     payNum = byNum / (1 - config.rate);
   }
   aboutPrice = payNum / getNum; // 计算出预估成交价 - payCoin/getCoin
-  // const aboutPriceSym0 = getNum / payNum; // pay Coin Price
-  // const aboutPriceSym1 = payNum / getNum; // get Coin Price
-
+  let minOut = 0;
+  if (inData.type === 'pay') {
+    minOut = getNum * (1 - inData.slipPointUser);
+  } else {
+    minOut = payNum * (1 + Number(inData.slipPointUser));
+  }
   return {
     payNum,
     getNum,
     aboutPrice,
-    // aboutPriceSym0,
-    // aboutPriceSym1
+    minOut,
   }
 }
 

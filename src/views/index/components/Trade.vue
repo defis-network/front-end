@@ -44,23 +44,37 @@
           </el-input>
           <div class="tradeRate">
             <span>{{ $t('dex.rate') }}</span>
-            <span v-if="!direction">1 {{ thisMarket.symbol0 }} = {{ tradeInfo.aboutPrice | numberTofixed }} {{ thisMarket.symbol1 }}</span>
+            <span v-if="direction">1 {{ thisMarket.symbol0 }} = {{ tradeInfo.aboutPrice | numberTofixed }} {{ thisMarket.symbol1 }}</span>
             <span v-else>1 {{ thisMarket.symbol1 }} = {{ tradeInfo.aboutPrice | numberTofixed }} {{ thisMarket.symbol0 }}</span>
           </div>
         </el-form-item>
-        <div class="infoDetail" v-if="Number(tradeInfo.aboutPrice) && false">
+        <div class="infoDetail" v-if="Number(tradeInfo.aboutPrice)">
           <div class="title">交易详情</div>
           <div class="detail">
-            <div class="doing">您正在出售 XXX , 滑点是{{ tradeInfo.slipPoint }}</div>
+
+            <div class="doing" v-if="tradeInfo.type === 'pay'">
+              <span>您正在出售</span>
+              <span class="coin">{{ `${handleToFixed(payNum, 4)} ${minOutCoin(0)}` }}</span>
+              <span>兑换</span>
+              <span class="coin">{{ `${handleToFixed(tradeInfo.minOut, 4)} ${minOutCoin(1)}` }}</span>
+            </div>
+            <div class="doing" v-else>
+              <span>您正在购买</span>
+              <span class="coin">{{ `${handleToFixed(getNum, 4)} ${minOutCoin(0)}` }}</span>
+              <span>支付</span>
+              <span class="coin">{{ `${handleToFixed(tradeInfo.minOut, 4)} ${minOutCoin(1)}` }}</span>
+            </div>
+
             <div class="setting">
               <div>滑点保护  ? </div>
-              <div>
-                <span>1%</span>
-                <span>5%</span>
-                <span>10%</span>
+              <div class="slipPoint">
+                <span @click="handleChangeSlip('1')">1%</span>
+                <span @click="handleChangeSlip('5')">5%</span>
+                <span @click="handleChangeSlip('10')">10%</span>
               </div>
               <div>
-                <el-input v-model="slipPoint" type="number">
+                <el-input v-model="slipPointUser" type="number"
+                  @input="handleChangeSlip">
                   <span slot="suffix" clearable>%</span>
                 </el-input>
               </div>
@@ -106,7 +120,7 @@ export default {
       balanceSym1: '0.0000',
       timer: null,
       tradeInfo: {}, // 交易详情
-      slipPoint: '',
+      slipPointUser: '0.05', // 默认 5%
     }
   },
   props: {
@@ -150,13 +164,32 @@ export default {
     })
   },
   mounted() {
+    console.log(this.thisMarket)
   },
   beforeDestroy() {
     clearInterval(this.timer)
   },
   methods: {
+    // 滑点保护设置
+    minOutCoin(index) {
+      const dir = this.direction;
+      const type = this.tradeInfo.type === 'pay';
+      if (index === 0) {
+        const coin0 = (!dir && type) || (dir && !type) ? this.thisMarket.symbol0 : this.thisMarket.symbol1;
+        return coin0
+      }
+      const coin1 = (!dir && !type) || (dir && type) ? this.thisMarket.symbol0 : this.thisMarket.symbol1;
+      return coin1
+    },
+    handleChangeSlip(rate) {
+      if (Number(rate) < 0) {
+        return
+      }
+      this.slipPointUser = rate;
+      this.handleInBy(this.tradeInfo.type)
+    },
     handleToFixed(n, l) {
-      if (Number(n)) {
+      if (!isNaN(n)) {
         return toFixed(Number(n), l || 4)
       }
       return ''
@@ -213,6 +246,8 @@ export default {
         poolSym0: this.thisMarket.reserve0.split(' ')[0],
         poolSym1: this.thisMarket.reserve1.split(' ')[0],
         poolToken: this.thisMarket.liquidity_token,
+        type,
+        slipPointUser: this.slipPointUser / 100, // 滑点保护
       }
       if (type === 'pay') {
         inData.payNum = this.payNum;
@@ -220,10 +255,9 @@ export default {
         inData.getNum = this.getNum;
       }
       const outData = dealTrade(inData);
+      console.log(outData)
       this.tradeInfo = outData;
       type === 'pay' ? this.getNum = toFixed(outData.getNum, 4) : this.payNum = toFixed(outData.payNum, 4);
-      // this.getNum = outData.getNum;
-      // this.payNum = outData.payNum;
     },
     handleExchange() {
       this.direction = !this.direction;
@@ -332,6 +366,23 @@ export default {
   font-size: 14px;
   .title{
     color: #F56C6C;
+  }
+  .slipPoint{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+
+    &>span{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 30px;
+      border-radius: 3px;
+      border: 1px solid #999;
+      margin-right: 10px;
+    }
   }
 }
 

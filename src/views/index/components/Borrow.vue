@@ -23,7 +23,7 @@
         </el-input>
       </el-form-item>
       <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleTransfer">{{ $t('bank.borrowBtn') }}</el-button>
-      <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('bank.loginPls') }}</el-button>
+      <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
     </el-form>
 
     <!-- 列表 -->
