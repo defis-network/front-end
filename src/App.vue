@@ -58,7 +58,7 @@ export default {
       const urlData = GetUrlPara();
       const protocol = location.protocol;
       if (urlData.env === 'dev' && protocol === 'https:') {
-        location.href = `http://${location.host}`
+        location.href = `http://${location.host}?env=dev`
         // location.href = `http://www.baidu.com`
       }
     },
