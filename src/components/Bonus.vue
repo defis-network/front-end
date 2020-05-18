@@ -223,6 +223,7 @@ export default {
   .list{
     margin-top: 20px;
     font-size: 14px;
+    font-weight: 500;
     &>div{
       display: flex;
       align-items: center;

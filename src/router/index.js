@@ -22,11 +22,37 @@ const constantRouter = [
     children: [
       {
         path: '/',
-        name: 'index',
-        component: () => import('@/views/index/Index'),
-        meta: { title: 'Index' },
+        name: 'bank',
+        // component: () => import('@/views/index/Index'),
+        component: () => import(/* webpackChunkName: "nopage" */ '@/views/index/Index.vue'),
+        meta: { title: 'bank' },
+      },
+      {
+        path: '/dex',
+        name: 'dex',
+        component: () => import(/* webpackChunkName: "nopage" */ '@/views/dex/Index.vue'),
+        meta: { title: 'dex' },
+      },
+      {
+        path: '/pools',
+        name: 'pools',
+        component: () => import(/* webpackChunkName: "nopage" */ '@/views/pools/Index.vue'),
+        meta: { title: 'pools' },
+      },
+      {
+        path: '/hyk',
+        name: 'hyk',
+        component: () => import(/* webpackChunkName: "nopage" */ '@/views/hyk/Index.vue'),
+        meta: { title: 'hyk' },
       },
     ]
+  },
+  {
+    path: '/dex/create-market',
+    name: 'createMarket',
+    // component: () => import('@/views/index/Index'),
+    component: () => import(/* webpackChunkName: "nopage" */ '@/views/dex/childViews/CreateMarket.vue'),
+    meta: { title: 'bank', noTabbar: true },
   },
   // 404
   {

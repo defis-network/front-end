@@ -1,13 +1,12 @@
 <template>
   <div class="selectMarket">
     <!-- 选择市场 -->
-    <el-form ref="formBorrow" label-width="75px">
-      <el-form-item :label="$t('dex.chooseMarket')" style="margin-bottom: 0">
+    <el-form ref="formBorrow" v-if="show">
+      <el-form-item style="margin-bottom: 0">
         <div class="selectDiv" @click="handleShowDrawer">
-          <span>{{ thisMarket.symbol0 }}/{{ thisMarket.symbol1 }}</span>
+          <span>{{ thisMarket.symbol0 }} / {{ thisMarket.symbol1 }}</span>
           <span class="iconfont icon-huaban29 select"></span>
         </div>
-        <br>
       </el-form-item>
     </el-form>
 
@@ -55,6 +54,10 @@ export default {
       default: function lists() {
         return []
       }
+    },
+    show: {
+      type: Boolean,
+      default: false,
     }
   },
   methods: {
@@ -73,15 +76,18 @@ export default {
 <style lang="scss" scoped>
 .selectMarket{
   .selectDiv{
-    border: 1px solid #DCDFE6;
+    // border: 1px solid #DCDFE6;
     border-radius: 5px;
     position: relative;
+    color: #333;
+    font-size: 20px;
+    font-weight: bold;
     .select{
       position: absolute;
       transform: rotate(90deg);
-      right: 10px;
       font-size: 14px;
       color: #999;
+      margin-left: 10px;
     }
   }
 }

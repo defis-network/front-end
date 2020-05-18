@@ -1,16 +1,21 @@
 <template>
-  <div id="app">
+  <div id="app" :class="{'noTab': $route.meta.noTabbar}">
     <router-view></router-view>
+    <div class="tabbarDiv" v-if="!$route.meta.noTabbar">
+      <tabbar />
+    </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 import { GetUrlPara } from '@/utils/public';
+import Tabbar from '@/components/Tabbar';
 
 export default {
   name: 'App',
   components: {
+    Tabbar,
   },
   computed: {
     ...mapState({
@@ -20,6 +25,11 @@ export default {
       devConfig: state => state.sys.devConfig, // 开发环境
       proConfig: state => state.sys.proConfig, // 生产环境
     }),
+  },
+  watch: {
+    '$route':function list(newVal) {
+      console.log(newVal)
+    }
   },
   created() {
     this.handleEnvReLoad()
@@ -38,7 +48,7 @@ export default {
       } else {
         this.language = navigator.browserLanguage;
       }
-      if (this.language !== 'zh-CN' && this.language !== 'zh-TW' && this.language !== 'ko') {
+      if (this.language !== 'zh-CN') {
         this.language = 'en';
       }
       this.$i18n.locale = this.language;
@@ -47,7 +57,7 @@ export default {
     handleEnvReLoad() {
       const urlData = GetUrlPara();
       const protocol = location.protocol;
-      if (urlData.env === '1dev' && protocol === 'https:') {
+      if (urlData.env === 'dev' && protocol === 'https:') {
         location.href = `http://${location.host}`
         // location.href = `http://www.baidu.com`
       }
@@ -83,5 +93,17 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  padding-bottom: 50px;
+}
+
+.noTab{
+  padding-bottom: 0px !important;
+}
+.tabbarDiv{
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+  z-index: 10;
+  background: #FFF;
 }
 </style>

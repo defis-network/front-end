@@ -1,19 +1,13 @@
 <template>
   <div class="layout">
     <div class="project">
-      <span class="logo">JIN-Network</span>
-      <span class="login" v-if="!scatter.identity">
-        <el-button class="btn" type="primary" plain round @click="handleLogin">{{ $t('public.login') }}</el-button>
-      </span>
-      <div class="account" v-else>
-        <span class="name">{{ $t('public.account') }}：{{ scatter.identity.accounts[0].name }}</span>
-        <span class="loginOut" @click="handleLoginOut">{{ $t('public.loginOut') }}</span>
-      </div>
+      <header-nav @listenLogin="handleLogin"/>
     </div>
     <transition name="fade" mode="out-in">
-      <router-view class="content" @listenLogin="handleLogin"/>
+      <router-view class="content" @listenLogin="handleLogin"
+        :marketLists="marketLists"/>
     </transition>
-    <footer-div />
+    <warm-tip />
   </div>
 </template>
 
@@ -21,27 +15,30 @@
 import { login } from '@/utils/public';
 import { mapState } from 'vuex'
 import { EosModel } from '@/utils/eos';
-import FooterDiv from '@/components/FooterDiv';
+import WarmTip from '@/components/WarmTip';
+import HeaderNav from '@/components/HeaderNav';
 
 export default {
   name: 'layout',
   components: {
-    FooterDiv,
+    WarmTip,
+    HeaderNav
   },
   data() {
     return {
+      marketLists: [],
     }
   },
   computed:{
     ...mapState({
       // 箭头函数可使代码更简练
       scatter: state => state.app.scatter,
+      baseConfig: state => state.sys.baseConfig, // 基础配置 - 默认为{}
     })
   },
   mounted() {
-    EosModel.scatterInit(this, () => {
-    })
-    // this.handleLogin()
+    EosModel.scatterInit(this, () => {})
+    this.handleRowsMarket();
   },
   methods: {
     // 登录
@@ -52,6 +49,28 @@ export default {
       EosModel.accountLoginOut(() => {
         location.reload()
       });
+    },
+    // 获取做市池子
+    handleRowsMarket() {
+      const params = {
+        code: this.baseConfig.toAccountSwap,
+        scope: this.baseConfig.toAccountSwap,
+        table: 'markets',
+        json: true
+      }
+      EosModel.getTableRows(params, (res) => {
+        const list = res.rows || [];
+        list.forEach((v) => {
+          const sym0 = v.sym0.split(',');
+          v.symbol0 = sym0[1]; // 币种
+          v.decimal0 = sym0[0]; // 精度
+          const sym1 = v.sym1.split(',');
+          v.symbol1 = sym1[1]; // 币种
+          v.decimal1 = sym1[0]; // 精度
+        });
+        this.marketLists = list;
+        console.log(list)
+      })
     }
   }
 }
@@ -61,17 +80,17 @@ export default {
 .layout{
   width: 100%;
   margin: auto;
-  min-height: 100vh;
+  min-height: calc(100vh - 50px);
   position: relative;
-  padding-bottom: 80px;
+  box-sizing: border-box;
+  padding-top: 44px;
   box-sizing: border-box;
 }
-.content{
-  padding-top: 50px;
-}
+// .content{
+//   padding-top: 50px;
+// }
 .project{
-  padding: 0px 10px;
-  font-size: 20px;
+  padding: 0px 0px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -79,9 +98,9 @@ export default {
   width: 100%;
   background: #FFF;
   box-sizing: border-box;
-  height: 50px;
+  top: 0px;
   z-index: 1000;
-  box-shadow: 0 0 3px 3px #fafafa inset;
+  box-shadow: 0 0 5px 3px #f0f0f0;
   .logo{
     padding-left: 5px;
   }

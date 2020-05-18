@@ -1,10 +1,21 @@
 <template>
   <div class="warmTip" v-if="!close">
-    <div class="tipDiv" @click="handleClose">
-      <span class="iconfont icon-hongse1 warmIcon"></span>
-      <span>项目尚处于beta阶段。使用需自行承担风险。</span>
-    </div>
-    <span class="iconfont closeIcon"></span>
+    <el-dialog
+      class="dialog"
+      width="282px"
+      top="20vh"
+      :center="true"
+      :show-close="false"
+      :visible.sync="showWarm">
+      <div class="tipDiv">
+        <div class="flex">
+          <img class="img" src="@/assets/img/warning.png" alt="">
+        </div>
+        <div class="tip">项目尚处于beta阶段。使用需自行承担风险。</div>
+        <div><el-button class="btn" type="primary" @click="showWarm = false">我已知晓</el-button></div>
+        <div class="flex"><el-button class="noTip" type="primary" @click="handleClose">不再提示</el-button></div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -13,6 +24,7 @@ export default {
   data() {
     return {
       close: false,
+      showWarm: true,
     }
   },
   mounted() {
@@ -33,30 +45,45 @@ export default {
 
 <style lang="scss" scoped>
 .warmTip{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 12px;
-  color: #f56c6c;
-  background: #fef0f0;
-  border: 1px solid #fbc4c4;
-  padding: 10px 5px 10px 15px;
-  margin: 20px 10px 20px;
-  border-radius: 20px;
+  /deep/ .el-dialog{
+    // height: 319px;
+    border-radius: 8px;
+    .el-dialog__header{
+      padding: 0;
+    }
+    .el-dialog__body{
+      padding-bottom: 0;
+    }
+  }
   .tipDiv{
-    display: flex;
-    align-items: center;
-  }
-  .warmIcon{
-    color: #f56c6c;
-    margin-right: 5px;
-  }
-  .closeIcon{
-    font-size: 10px;
-    margin-right: 15px;
-
-    &::after{
-      content: "✕";
+    padding: 16px 16px 0;
+    .flex{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .img{
+      width: 96px;
+    }
+    .tip{
+      text-align: left;
+      font-weight: bold;
+      font-size: 14px;
+      margin-top: 38px;
+      margin-bottom: 19px;
+    }
+    .btn{
+      width: 100%;
+      background: #42B48F;
+      border-color: transparent;
+      margin-bottom: 5px;
+    }
+    .noTip{
+      margin: auto;
+      background: transparent;
+      font-size: 12px;
+      color: #999999;
+      border-color: transparent;
     }
   }
 }

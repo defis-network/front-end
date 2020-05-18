@@ -31,6 +31,7 @@ export function dealTrade(inData) {
     eosPrice, // 当前EOS价格
     jinPrice, // 当前JIN价格
     type: inData.type,
+    aboutPrice: inData.type === 'pay' ? jinPrice : eosPrice
   }
   // 没有输入支付数量 & 得到数量时 - 返回默认配置
   if (!Number(inData.payNum) && !Number(inData.getNum)) {
@@ -118,6 +119,15 @@ export function dealTokenV1(inData) {
 export function dealToken(inData) {
   let payNum1 = Number(inData.payNum1);
   let payNum2 = Number(inData.payNum2);
+  const rate = inData.poolSym1 / inData.poolSym0;
+  if (!payNum1 && !payNum2) {
+    return {
+      payNum1,
+      payNum2,
+      getToken: 0,
+      rate
+    };
+  }
   if (inData.poolToken === 0) {
     let getToken = Math.sqrt(inData.payNum1 * inData.payNum2) - config.MINIMUM_LIQUIDITY;
         getToken = parseInt(parseInt);
@@ -125,6 +135,7 @@ export function dealToken(inData) {
       payNum1,
       payNum2,
       getToken,
+      rate
     }
   }
   // EOS价格
@@ -142,6 +153,7 @@ export function dealToken(inData) {
     payNum1,
     payNum2,
     getToken,
+    rate
   }
 }
 /**

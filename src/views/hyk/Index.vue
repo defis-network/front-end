@@ -1,40 +1,58 @@
 <template>
-  <div>
+  <div class="hyk">
     <!-- 方式1: 现价认购 -->
     <div class="type">
-      <div class="title">{{ $t('hyk.limitBuy') }}</div>
-      <el-form class="formDiv" ref="formBorrow" label-width="75px">
-        <el-form-item :label="$t('hyk.rate')">
+      <div class="navTitle">
+        <span class="title">认购</span>
+        <span class="bonus" @click="showBonus = !showBonus">股权权益</span>
+      </div>
+      <el-form class="formDiv" ref="formBorrow">
+        <el-form-item>
+          <div class="label">
+            <span>认购价格</span>
+            <span>{{ 1/price | numberTofixed }} EOS/HYK</span>
+          </div>
+        </el-form-item>
+        <el-form-item>
+          <div class="label">
+            <span>{{ $t('hyk.rate') }}</span>
+            <span>{{ percentage }}%</span>
+          </div>
           <div class="progress">
-            <el-progress :text-inside="true" :stroke-width="16" :percentage="percentage" status="success"></el-progress>
+            <el-progress :text-inside="true" :stroke-width="10" color="#42B48F" :percentage="percentage"></el-progress>
           </div>
         </el-form-item>
-        <!-- 抵押数量 -->
-        <el-form-item :label="$t('hyk.buyCount')">
-          <el-input v-model="payNum"
-            @focus="handleIptFocus('stake')"
-            @input="handleGetNum" @blur="handleInputBlur('stake')" type="number" clearable>
-            <span slot="suffix">EOS</span>
-          </el-input>
-          <!-- 余额 -->
-          <div class="balance">
-            <span>{{ $t('public.balance') }}：{{balanceEos}} EOS</span>
-          </div>
-        </el-form-item>
-        <!-- 生成总额 -->
-        <el-form-item :label="$t('hyk.buyNum')" style="margin-top: 5px">
-          <el-input v-model="getNum"
-            @focus="handleIptFocus('mint')"
-            @input="handleGetTransNum" @blur="handleInputBlur('mint')" type="number" clearable>
-            <span slot="suffix">HYK</span>
-          </el-input>
-        </el-form-item>
+        <div class="bgF5">
+          <!-- 抵押数量 -->
+          <el-form-item>
+            <div class="label">认购金额</div>
+            <el-input v-model="payNum"
+              @focus="handleIptFocus('stake')"
+              @input="handleGetNum" @blur="handleInputBlur('stake')" type="number">
+              <span slot="suffix">EOS</span>
+            </el-input>
+          </el-form-item>
+          <!-- 生成总额 -->
+          <el-form-item>
+            <div class="label">认购数量</div>
+            <el-input v-model="getNum"
+              @focus="handleIptFocus('mint')"
+              @input="handleGetTransNum" @blur="handleInputBlur('mint')" type="number">
+              <span slot="suffix">HYK</span>
+            </el-input>
+          </el-form-item>
+        </div>
+
+        <!-- 余额 -->
+        <div class="balance">
+          <span>{{ $t('public.balance') }}：{{balanceEos}} EOS</span>
+        </div>
         <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleTransfer">{{ $t('hyk.buyHYK') }}</el-button>
         <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
       </el-form>
     </div>
     <!-- 方式2: swap认购 -->
-    <div class="type">
+    <div class="type" v-if="false">
       <div class="title">{{ $t('hyk.swapBuy') }}</div>
       <el-form class="formDiv" ref="formBorrow" label-width="75px">
         <el-form-item :label="$t('hyk.buyCount')" style="margin-bottom: 0;">
@@ -63,17 +81,28 @@
         <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
       </el-form>
     </div>
+
+    <el-dialog
+      class="dialog"
+      width="320px"
+      :visible.sync="showBonus">
+      <bonus v-if="showBonus"/>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 import { EosModel } from '@/utils/eos';
-import { toFixed, toLocalTime } from '@/utils/public';
+import { toFixed } from '@/utils/public';
 import { dealTrade } from '@/utils/logic';
+import Bonus from '@/components/Bonus';
 
 export default {
   name: 'buyHyk',
+  components: {
+    Bonus
+  },
   data() {
     return {
       payNum: '0.0000',
@@ -103,7 +132,8 @@ export default {
         sym1: "4,JIN",
         symbol0: "EOS",
         symbol1: "JIN",
-      }
+      },
+      showBonus: false,
     }
   },
   props: {
@@ -300,56 +330,93 @@ export default {
 
 <style lang="scss" scoped>
 .type{
-  border-bottom: 2px solid #fafafa;
-  margin-bottom: 20px;
-  padding-bottom: 30px;
-
-  &:last-child{
-    border-bottom: 0px solid #fafafa;
-    margin-bottom: 0px;
-    padding-bottom: 20px;
-  }
-  .title{
-    text-align: left;
-    height: 40px;
-    line-height: 40px;
-    margin-top: 10px;
-    &::before{
-      content: '';
-      position: relative;
-      margin-right: 5px;
-      border-left: 2px solid #409EFF;
+  padding: 20px 18px;
+  .navTitle{
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    color: #C1C1C1;
+    margin-bottom: 20px;
+    .title{
+      font-size: 28px;
+      color: #070707;
+      font-weight: 500;
+    }
+    .bonus{
+      font-size: 14px;
+      color: #42B48F;
+      font-weight: bold;
     }
   }
-}
-.changeDiv{
-  margin-bottom: 30px;
-  .change{
-    font-size: 20px;
-    color: #409EFF;
-  }
-}
-.formDiv{
-  margin-top: 20px;
-  .progress{
-    position: absolute;
-    width: 100%;
-    overflow: hidden;
-    top: 50%;
-    transform: translate(0, -50%);
-    /deep/ .el-progress-bar__outer{
-      border-radius: 2px;
+  .formDiv{
+    color: #000;
+    .label{
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: bold;
+    }
+    .bgF5{
+      background: #f5f5f5;
+      padding: 10px 20px;
+      border-radius: 8px;
+    }
+    .progress{
+      margin-bottom: 20px;
+      /deep/ .el-progress-bar__innerText{
+        color: transparent;
+      }
+    }
+    /deep/ .el-form-item{
+      margin-bottom: 0px;
+      &:last-child{
+        margin-bottom: 0px;
+      }
+    }
+    /deep/ .el-input{
+      background-color: transparent;
+      .el-input__inner{
+        color: #070707;
+        font-weight: 500;
+        background-color: transparent;
+        font-size: 24px;
+        padding-left: 0px;
+        outline: none;
+        border: 1px solid transparent;
+        &:focus{
+          border-color: transparent;
+        }
+      }
+      .el-input__suffix{
+        color: #070707;
+        font-weight: 500;
+        font-size: 16px;
+      }
     }
   }
   .balance{
+    margin: 10px 0 20px;
     text-align: right;
-    &>span{
-      cursor: pointer;
-    }
+    font-size: 12px;
+    color: #070707;
   }
-
   .btn{
     width: 100%;
+    background: #42B48F;
+    color: #fff;
+    border-color: transparent;
+    &.out{
+      background: #C05D5D;
+    }
+  }
+}
+.hyk{
+  /deep/ .el-dialog{
+    border-radius: 8px;
+    .el-dialog__header{
+      padding: 0;
+    }
   }
 }
 </style>
