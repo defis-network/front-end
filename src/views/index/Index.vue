@@ -203,7 +203,8 @@ export default {
         json: true
       }
       EosModel.getTableRows(params, (res) => {
-        const list = res.rows.filter(v => v.owner === this.scatter.identity.accounts[0].name)
+        const rows = res.rows || [];
+        const list = rows.filter(v => v.owner === this.scatter.identity.accounts[0].name)
         list.forEach((v) => {
           v.ctime = toLocalTime(`${v.create_time}.000+0000`);
           v.staked = !!Number(v.rex_received.split(' ')[0]);
