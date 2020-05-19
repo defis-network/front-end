@@ -196,13 +196,14 @@ export default {
     }
   }
   .btn{
-    margin: 0px 18px;
-    position: absolute;
+    margin: 20px 0 0;
+    // position: absolute;
     bottom: 5px;
     left: 0px;
-    width: calc(100% - 36px);
+    width: calc(100%);
     background: #42B48F;
     color: #fff;
+    border-color: transparent;
   }
 }
 </style>

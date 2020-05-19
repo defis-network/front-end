@@ -38,7 +38,7 @@ export default {
     rate: '兑换比率',
     slipPoint: '滑点保护',
     slipTip: '如果您提交交易后，价格变化超过滑点保护的范围，交易将被撤销。',
-    addMarket: '添加市场',
+    addMarket: '创建市场',
     swapNow: '立即兑换',
     coin: '币种{coin}',
     contract: '合约地址',

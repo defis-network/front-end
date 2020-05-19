@@ -151,6 +151,7 @@ export default {
       showDetail: false,
       isUserSet: false,
       ani: false,
+      aniTimer: null,
     }
   },
   props: {
@@ -317,7 +318,6 @@ export default {
         inData.getNum = this.getNum;
       }
       const outData = dealTrade(inData);
-      console.log(outData)
       this.tradeInfo = outData;
       type === 'pay' ? this.getNum = toFixed(outData.minOut, 4) : this.payNum = toFixed(outData.minOut, 4);
     },
@@ -327,7 +327,8 @@ export default {
       this.getNum = '0.0000';
       this.tradeInfo = {};
       this.ani = true;
-      setTimeout(() => {
+      clearTimeout(this.aniTimer)
+      this.aniTimer = setTimeout(() => {
         this.ani = false;
       }, 300);
     },
@@ -445,7 +446,7 @@ export default {
     }
     .aniDiv{
       width: 18px;
-      height: 23px;;
+      height: 25px;;
       position: relative;
       display: flex;
       align-items: center;
@@ -474,7 +475,7 @@ export default {
     .bottomIcon{
       position: absolute;
       bottom: 0px;
-      left: 5px;
+      left: 7px;
       font-size: 13px;
       transition: .3s all;
       transform: translate(0) rotate(90deg);

@@ -9,8 +9,8 @@
       <div class="navList">
         <div class="list" @click="handleShowBonus">{{ $t('hyk.stock') }}</div>
         <div class="list">
-          <span v-if="language === 'en'" @click="handleChangeLang('zh-CN')">EN</span>
-          <span v-else @click="handleChangeLang('en')">CN</span>
+          <span v-if="language !== 'en'" @click="handleChangeLang('en')">EN</span>
+          <span v-else @click="handleChangeLang('zh-CN')">CN</span>
         </div>
         <div class="list"><a class="github" href="https://github.com/jin-network" target="_blank">Github</a></div>
         <div class="list" v-if="scatter.identity" @click="handleLoginOut">{{ $t('public.loginOut') }}</div>

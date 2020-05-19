@@ -5,7 +5,7 @@
     </div>
     <div class="tools">
       <div class="account">
-        <span class="login" v-if="!scatter.identity" @click="handleLogin">登录</span>
+        <span class="login" v-if="!scatter.identity" @click="handleLogin">{{ $t('public.login') }}</span>
         <span class="acc" v-else>{{ scatter.identity.accounts[0].name }}</span>
       </div>
       <!-- <div class="lang">
@@ -76,6 +76,8 @@ export default {
       padding-right: 10px;
     }
     .login{
+      font-size: 14px;
+      font-weight: 500;
       color: #42B48F;
     }
   }
