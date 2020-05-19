@@ -21,7 +21,7 @@
       </div>
       <div :class="{'green': checked === 2}">{{ $t('tab.pools') }}</div>
     </div>
-    <div  @click="handleTo(3)">
+    <div  @click="handleTo(3)" v-if="false">
       <div>
         <img v-if="checked !== 3" src="@/assets/img/hyk.png" alt="">
         <img v-else src="@/assets/img/hyk1.png" alt="">

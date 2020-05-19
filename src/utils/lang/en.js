@@ -13,9 +13,9 @@ export default {
     useDefined: 'User-defined'
   },
   tab: {
-    bank: 'Treasury',
+    bank: 'Bank',
     dex: 'Swap',
-    pools: 'Market',
+    pools: 'Pools',
     hyk: 'Subscribe'
   },
   bank: {
@@ -38,7 +38,7 @@ export default {
     rate: 'Swap ratio',
     slipPoint: 'Slippage protection',
     slipTip: 'Your transaction will revert if the execution price changes by more than this amount after you submit your trade.',
-    addMarket: 'Add market',
+    addMarket: 'Create market',
     swapNow: 'Swap now',
     coin: 'Coin {coin}',
     contract: 'Contract address',
@@ -60,7 +60,7 @@ export default {
     chooseMarket: 'Select market',
   },
   hyk: {
-    stock: 'Stock rights',
+    stock: 'HYK DAO',
     stockPrice: 'Subscription price',
     stockRate: 'Subscription progress',
     buyCount: 'Subscription amount',
