@@ -17,14 +17,14 @@
       direction="btt">
       <div class="drawer">
         <div class="title">
-          <span>{{ $t('dex.chooseMarket') }}</span>
-          <span class="close" @click="drawer = false">{{ $t('public.close') }}</span>
+          <span>{{ $t('pools.chooseMarket') }}</span>
+          <span class="close" @click="drawer = false">{{ $t('public.cancel') }}</span>
         </div>
         <!-- <div class="searchDiv">放搜索框</div> -->
         <div class="lists">
           <div class="list" v-for="(item, index) in marketLists" :key="index">
             <div @click="handleSelectThis(item)">
-              <div>{{ item.symbol0 }} / {{ item.symbol1 }}</div>
+              <div class="symbol">{{ item.symbol0 }} / {{ item.symbol1 }}</div>
               <div class="contract">{{ item.contract0 }} / {{ item.contract1 }}</div>
             </div>
           </div>
@@ -98,12 +98,14 @@ export default {
     border-top-right-radius: 10px;
   }
   .drawer{
-    padding: 0 10px;
+    padding: 0 18px;
     .title{
+      margin-top: 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       height: 40px;
+      font-weight: 500;
     }
     .list{
       height: 60px;
@@ -114,6 +116,9 @@ export default {
       border-bottom: 1px solid #ebeef5;
       &>div{
         width: 100%;
+      }
+      .symbol{
+        font-weight: 500;
       }
       .contract{
         color: #999;

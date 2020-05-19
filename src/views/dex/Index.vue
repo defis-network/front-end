@@ -1,8 +1,8 @@
 <template>
   <div class="swapTrade">
     <div class="navTitle">
-      <span class="title">兑换</span>
-      <span @click="handleToCreateMarket">添加市场></span>
+      <span class="title">{{ $t('tab.dex') }}</span>
+      <span @click="handleToCreateMarket">{{ $t('dex.addMarket') }}></span>
     </div>
     <div class="trade" v-if="index === 1">
       <market-lists-com ref="marketListsCom" :thisMarket="thisMarket" :marketLists="marketLists"
@@ -10,7 +10,7 @@
       <el-form ref="formBorrow" class="formDiv">
         <!-- 抵押数量 -->
         <el-form-item style="margin-bottom: 0">
-          <div class="label">支付</div>
+          <div class="label">{{ $t('dex.pay') }}</div>
           <el-input v-model="payNum" type="number"
                     @input="handleInBy('pay')"
                     @focus="handleFocus('pay')"
@@ -25,11 +25,15 @@
           </el-input>
         </el-form-item>
         <el-divider>
-          <img class="change" @click="handleExchange" src="@/assets/img/change.png" alt="">
+          <span class="aniDiv" @click="handleExchange">
+            <span class="iconfont icon-huaban29 topIcon" :class="{'changing': ani}"></span>
+            <span class="iconfont icon-huaban29 bottomIcon" :class="{'changing': ani}"></span>
+          </span>
+          <!-- <img class="change" @click="handleExchange" :class="{'changing': ani}" src="@/assets/img/change.png" alt=""> -->
         </el-divider>
         <!-- 生成总额 -->
         <el-form-item>
-          <div class="label">获取</div>
+          <div class="label">{{ $t('dex.obtain') }}</div>
           <el-input v-model="getNum" type="number"
                     @input="handleInBy('get')"
                     @focus="handleFocus('get')"
@@ -51,15 +55,18 @@
           <span v-else>1 {{ thisMarket.symbol1 }} = {{ tradeInfo.aboutPrice | numberTofixed }} {{ thisMarket.symbol0 }}</span>
         </div>
         <div class="slipPointDiv" v-if="showDetail">
-          <div class="tradeRate">滑点保护</div>
+          <div class="tradeRateTitle">
+            <span>{{ $t('dex.slipPoint') }}</span>
+            <span class="iconfont icon-huaban tip" @click="handleShowSlipTip"></span>
+          </div>
           <div class="slipPoint">
             <span :class="{'checked': !isUserSet && slipPointUser === '1'}" @click="handleChangeSlip('1')">1%</span>
             <span :class="{'checked': !isUserSet && slipPointUser === '5'}" @click="handleChangeSlip('5')">5%</span>
             <span :class="{'checked': !isUserSet && slipPointUser === '10'}" @click="handleChangeSlip('10')">10%</span>
           </div>
           <div class="slipIpt">
-            <el-input v-model="isUserSetSlip" type="number"
-              placeholder="自定义"
+            <el-input class="sIpt" v-model="isUserSetSlip" type="number"
+              :placeholder="$t('public.useDefined')"
               :class="{'checked': isUserSet}"
               @focus="isUserSet = true"
               @blur="handleSlipIptBlur"
@@ -76,12 +83,12 @@
 
       <!-- 余额 -->
       <div class="balance">
-        <span>手续费：0.3%</span>
+        <span>{{ $t('public.fee') }}：0.3%</span>
         <span v-if="!direction">{{ $t('public.balance') }}：{{balanceSym0}} {{ thisMarket.symbol0 }}</span>
         <span v-else>{{ $t('public.balance') }}：{{balanceSym1}} {{ thisMarket.symbol1 }}</span>
       </div>
 
-      <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleSwapTrade">{{ $t('dex.trade') }}</el-button>
+      <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleSwapTrade">{{ $t('dex.swapNow') }}</el-button>
       <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
     </div>
 
@@ -90,6 +97,8 @@
         @listenGetMarketsList="handleRowsMarket"
         :scatter="scatter" />
     </div>
+
+    <slip-tip ref="slipTip"/>
   </div>
 </template>
 
@@ -99,13 +108,13 @@ import { dealTrade } from '@/utils/logic';
 import { toFixed } from '@/utils/public';
 import { EosModel } from '@/utils/eos';
 import MarketListsCom from '@/views/index/components/MarketListsCom';
-import CreateDex from '@/views/index/components/CreateDex';
+import SlipTip from '@/views/dex/components/SlipTip';
 
 export default {
   name: 'trade',
   components: {
     MarketListsCom,
-    CreateDex
+    SlipTip
   },
   data() {
     return {
@@ -141,6 +150,7 @@ export default {
       isUserSetSlip: '', // 用户自定义滑点保护
       showDetail: false,
       isUserSet: false,
+      ani: false,
     }
   },
   props: {
@@ -193,6 +203,9 @@ export default {
     clearInterval(this.timer)
   },
   methods: {
+    handleShowSlipTip() {
+      this.$refs.slipTip.showTip = true;
+    },
     handleToCreateMarket() {
       this.$router.push({
         name: 'createMarket',
@@ -313,6 +326,10 @@ export default {
       this.payNum = '0.0000';
       this.getNum = '0.0000';
       this.tradeInfo = {};
+      this.ani = true;
+      setTimeout(() => {
+        this.ani = false;
+      }, 300);
     },
     handleFocus(type = 'pay') {
       const num = type === 'pay' ? Number(this.payNum) : Number(this.getNum);
@@ -366,6 +383,7 @@ export default {
     .title{
       font-size: 28px;
       color: #070707;
+      font-weight: 500;
     }
     .github{
       font-size: 14px;
@@ -425,8 +443,54 @@ export default {
         background: #F5F5F5;
       }
     }
+    .aniDiv{
+      width: 18px;
+      height: 23px;;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      // flex-direction: column; 
+      transition: .3s all;
+      transform: scale(1);
+      margin: 0 20px;
+      // &.changing{
+      //   transform: scale(1.2)
+      // }
+    }
+    .topIcon{
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      font-size: 14px;
+      color: #42B48F;
+      font-weight: bold;
+      transition: .3s all;
+      transform: translate(0) rotate(-90deg);
+      &.changing{
+        transform: translate(0, -3px) rotate(-90deg);
+      }
+    }
+    .bottomIcon{
+      position: absolute;
+      bottom: 0px;
+      left: 5px;
+      font-size: 13px;
+      transition: .3s all;
+      transform: translate(0) rotate(90deg);
+      color: #000;
+      font-weight: bold;
+      &.changing{
+        transform: translate(0, 3px) rotate(90deg);
+      }
+    }
     .change{
-      width: 20px;;
+      width: 20px;
+      transition: .3s all;
+      transform: scale(1);
+      &.changing{
+        transform: scale(1.2)
+      }
     }
   }
   .infoDetail{
@@ -457,8 +521,15 @@ export default {
     }
     .slipPointDiv{
       margin-top: 10px;
-      .tradeRate{
+      .tradeRateTitle{
+        display: flex;
+        align-items: center;
+        font-size: 14px;
         margin-bottom: 10px;
+        .tip{
+          font-size: 16px;
+          margin-left: 5px;
+        }
       }
       .slipPoint{
         display: flex;
@@ -473,6 +544,7 @@ export default {
           display: flex;
           align-items: center;
           justify-content: center;
+          font-weight: 500;
 
           &.checked{
             background: #FFF;
@@ -500,6 +572,7 @@ export default {
             height: 28px;;
             border-radius: 30px;
             font-size: 12px;
+            line-height: 28px;
             background: transparent;
             &:focus{
               color: #42B48F;
@@ -527,6 +600,7 @@ export default {
     width: 100%;
     background: #42B48F;
     color: #fff;
+    border-color: transparent;
   }
 }
 </style>

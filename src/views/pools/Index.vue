@@ -1,13 +1,13 @@
 <template>
   <div class="pools">
     <div class="navTitle">
-      <span class="title">做市</span>
+      <span class="title">{{ $t('tab.pools') }}</span>
     </div>
     <div class="mainDiv">
       <div class="topDiv">
         <div class="title">
-          <span :class="{'checkedIn': index === 1}" @click="index = 1">存入</span>
-          <span :class="{'checkedOut': index === 2}" @click="index = 2">取回</span>
+          <span :class="{'checkedIn': index === 1}" @click="index = 1">{{ $t('pools.deposit') }}</span>
+          <span :class="{'checkedOut': index === 2}" @click="index = 2">{{ $t('pools.withdrawal') }}</span>
         </div>
       </div>
       <div class="swap" v-if="index === 1">
@@ -42,8 +42,8 @@
           <!-- 生成总额 -->
           <el-form-item>
             <div class="label">
-              <span>凭证</span>
-              <span>（可用凭证 {{token}}）</span>
+              <span>{{ $t('pools.token') }}</span>
+              <span>（{{ $t('pools.ableToken') }} {{token}}）</span>
             </div>
             <el-input v-model="sellToken" type="number"
                       @focus="handleIptFocus()"
@@ -52,7 +52,7 @@
             </el-input>
           </el-form-item>
           <div class="getData">
-            <span>取回</span>
+            <span>{{ $t('pools.withdrawal') }}</span>
             <span class="num">{{ `${getNum1} ${thisMarket.symbol0}+${getNum2} ${thisMarket.symbol1}` }}</span>
           </div>
          </el-form>
@@ -64,16 +64,16 @@
       <div class="info">
         <div class="data">
           <div>
-            <span>存入比率</span>
+            <span>{{ $t('pools.depositRate') }}</span>
             <span class="num">1 {{ thisMarket.symbol0 }} : {{ rate }} {{ thisMarket.symbol1 }}</span>
           </div>
           <div>
-            <span>池内数量</span>
+            <span>{{ $t('pools.poolsNum') }}</span>
             <span class="num">{{ `${thisMarket.reserve0}+${thisMarket.reserve1}` }}</span>
           </div>
         </div>
         <div class="get">
-          <span>获得凭证数量</span>
+          <span>{{ $t('pools.getToken') }}</span>
           <span class="num">{{ getToken }}</span>
         </div>
       </div>
@@ -84,8 +84,8 @@
     </div>
 
     <div class="btnDiv">
-      <el-button class="btn" type="primary" v-if="scatter.identity && index === 1" plain @click="handleAddToken">{{ $t('pools.depositFunds') }}</el-button>
-      <el-button class="btn out" type="danger" v-else-if="scatter.identity && index !== 1" @click="handleToSell" plain>{{ $t('pools.withdrawalFunds') }}</el-button>
+      <el-button class="btn" type="primary" v-if="scatter.identity && index === 1" plain @click="handleAddToken">{{ $t('pools.deposit') }}</el-button>
+      <el-button class="btn out" type="danger" v-else-if="scatter.identity && index !== 1" @click="handleToSell" plain>{{ $t('pools.withdrawal') }}</el-button>
       <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
     </div>
 
@@ -421,6 +421,7 @@ export default {
     color: #C1C1C1;
     margin-bottom: 20px;
     .title{
+      font-weight: 500;
       font-size: 28px;
       color: #070707;
     }
@@ -467,7 +468,7 @@ export default {
         &>span{
           &:first-child{
             font-size: 14px;
-            font-weight: bold;
+            font-weight: 500;
           }
           &:last-child{
             font-size: 12px;
@@ -509,12 +510,12 @@ export default {
       }
       .and{
         font-size: 14px;
-        font-weight: bold;
-        padding: 0 30px;
+        font-weight: 500;
+        padding: 0 20px;
       }
       .coin{
         font-size: 20px;
-        font-weight: bold;
+        font-weight: 500;
         display: flex;
         .select{
           margin-left: 5px;
@@ -530,7 +531,7 @@ export default {
         padding: 20px 0px 0px;
         border-top: 1px solid #dadada;
         .num{
-          font-weight: bold;
+          font-weight: 500;
         }
       }
     }
@@ -552,7 +553,7 @@ export default {
       justify-content: space-between;
       margin-bottom: 9px;
       .num{
-        font-weight: bold;
+        font-weight: 500;
       }
     }
     .get{

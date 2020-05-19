@@ -6,11 +6,14 @@
     <div class="tools">
       <div class="account">
         <span class="login" v-if="!scatter.identity" @click="handleLogin">登录</span>
-        <span v-else>{{ scatter.identity.accounts[0].name }}</span>
+        <span class="acc" v-else>{{ scatter.identity.accounts[0].name }}</span>
       </div>
-      <div class="lang">
+      <!-- <div class="lang">
         <span v-if="language === 'en'" @click="handleChangeLang('zh-CN')">En</span>
         <span v-else @click="handleChangeLang('en')">CN</span>
+      </div> -->
+      <div class="more" @click="handleShowNav">
+        <img class="img" src="@/assets/img/more.png" alt="">
       </div>
     </div>
   </div>
@@ -22,6 +25,8 @@ import { mapState } from 'vuex'
 export default {
   data() {
     return {}
+  },
+  components: {
   },
   computed:{
     ...mapState({
@@ -37,6 +42,9 @@ export default {
     },
     handleLogin() {
       this.$emit('listenLogin', true)
+    },
+    handleShowNav() {
+      this.$emit('listenShowNav', true)
     }
   }
 }
@@ -69,6 +77,15 @@ export default {
     }
     .login{
       color: #42B48F;
+    }
+  }
+  .acc{
+    font-weight: 500;
+  }
+  .more{
+    height: 44px;
+    .img{
+      width: 16px;
     }
   }
 }

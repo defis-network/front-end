@@ -11,9 +11,9 @@
         <div class="flex">
           <img class="img" src="@/assets/img/warning.png" alt="">
         </div>
-        <div class="tip">项目尚处于beta阶段。使用需自行承担风险。</div>
-        <div><el-button class="btn" type="primary" @click="showWarm = false">我已知晓</el-button></div>
-        <div class="flex"><el-button class="noTip" type="primary" @click="handleClose">不再提示</el-button></div>
+        <div class="tip">{{ $t('public.warmTip') }}</div>
+        <div><el-button class="btn" type="primary" @click="showWarm = false">{{ $t('public.known') }}</el-button></div>
+        <div class="flex"><el-button class="noTip" type="primary" @click="handleClose">{{ $t('public.noTip') }}</el-button></div>
       </div>
     </el-dialog>
   </div>
@@ -52,7 +52,7 @@ export default {
       padding: 0;
     }
     .el-dialog__body{
-      padding-bottom: 0;
+      padding-bottom: 10px;
     }
   }
   .tipDiv{

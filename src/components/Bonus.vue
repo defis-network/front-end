@@ -1,33 +1,38 @@
 <template>
-  <div class="bonus">
-    <div class="title">HYK DAO</div>
-    <div class="list">
-      <div>
-        <span>DAO 账户</span>
-        <span class="account" @click="handleToBrowser">{{ baseConfig.bonusAccount }}</span>
-      </div>
-      <div>
-        <span>EOS 余额</span>
-        <span class="">{{ balanceEos }} EOS</span>
-      </div>
-      <div>
-        <span>JIN 余额</span>
-        <span class="">{{ balanceJin }} JIN</span>
-      </div>
-      <div>
-        <span>总估值</span>
-        <span class="totalValue">{{ totalValue }} USD</span>
-      </div>
-      <div>
-        <span>总股份数</span>
-        <span class="totalValue">{{ totalHykBonus }} HYK</span>
-      </div>
-      <div>
-        <span>每股分红</span>
-        <span class="balance">{{ perBonus }} USD</span>
+  <el-dialog
+    class="dialog"
+    width="320px"
+    :visible.sync="showBonus">
+    <div class="bonus" v-if="showBonus">
+      <div class="title">{{ $t('hyk.stock') }}</div>
+      <div class="list">
+        <div>
+          <span>{{ $t('hyk.bonusAcc') }}</span>
+          <span class="num" @click="handleToBrowser">{{ baseConfig.bonusAccount }}</span>
+        </div>
+        <div class='bonusTotal'>
+          <span>{{ $t('hyk.totalBonus') }}</span>
+          <span class="num">{{ balanceEos }} EOS</span>
+        </div>
+        <div class="balan">
+          <span></span>
+          <span class="num">{{ balanceJin }} JIN</span>
+        </div>
+        <div class="totalValue">
+          <span>{{ $t('hyk.totalVal') }}</span>
+          <span class="num">{{ totalValue }} USD</span>
+        </div>
+        <div>
+          <span>{{ $t('hyk.holdings') }}</span>
+          <span class="num">{{ totalHykBonus }} HYK</span>
+        </div>
+        <div>
+          <span>{{ $t('hyk.perBonus') }}</span>
+          <span class="num green">{{ perBonus }} USD</span>
+        </div>
       </div>
     </div>
-  </div>
+  </el-dialog>
 </template>
 
 <script>
@@ -40,6 +45,7 @@ export default {
   name: 'bonus',
   data() {
     return {
+      showBonus: false,
       balanceEos: '0.0000',
       balanceJin: '0.0000',
       totalValue: '0.0000', // JIN = USD  |  EOS = USD * price
@@ -64,6 +70,15 @@ export default {
       scatter: state => state.app.scatter,
       baseConfig: state => state.sys.baseConfig, // 基础配置 - 默认为{}
     }),
+  },
+  watch: {
+    showBonus(newVal) {
+      if(!newVal) {
+        return;
+      }
+      this.handleStartGetBalan();
+      this.handleStartTotalHyk()
+    }
   },
   mounted() {
     this.handleStartGetBalan();
@@ -206,7 +221,7 @@ export default {
     },
     // 计算每股分红
     handlePerBonus(totalValue, totalHykBonus) {
-      let perBonus = totalValue / totalHykBonus;
+      let perBonus = totalValue / (totalHykBonus / 10000);
       this.perBonus = toFixed(perBonus, 4);
     }
   }
@@ -214,13 +229,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.dialog{
+  /deep/ .el-dialog{
+    border-radius: 8px;
+    .el-dialog__header{
+      padding: 0;
+    }
+    .el-dialog__body{
+      padding-bottom: 20px;
+    }
+  }
+}
 .bonus{
   .title{
-    color: #F56C6C;
-    font-size: 18px;
+    color: #070707;
+    font-size: 16px;
     font-weight: 500;
   }
   .list{
+    color: #070707;
     margin-top: 20px;
     font-size: 14px;
     font-weight: 500;
@@ -229,16 +256,30 @@ export default {
       align-items: center;
       justify-content: space-between;
       height: 40px;
-
-      .account{
-        color: #409EFF !important;
+      &.bonusTotal{
+        margin-top: 10px;
       }
-
-      .balance{
-        color: #67c23a;
+      &.balan{
+        margin-top: 5px;
+        margin-bottom: 10px;
       }
-      .totalValue{
-        color: #F56C6C
+      &.bonusTotal,
+      &.balan{
+        height: auto;
+      }
+      &.totalValue{
+        padding-bottom: 15px;
+        border-bottom: 1px solid #d5d5d5;
+        margin-bottom: 15px;
+      }
+      &:last-child{
+        margin-bottom: 0px;
+      }
+      .num{
+        font-weight: 500;
+        &.green{
+          color: #42B48F
+        }
       }
     }
   }

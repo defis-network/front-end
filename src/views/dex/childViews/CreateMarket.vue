@@ -2,47 +2,47 @@
   <div class="createDex">
     <div class="titleDiv">
       <span class="iconfont icon-huaban29 back" @click="handleBack"></span>
-      <span>添加市场</span>
+      <span>{{ $t('dex.addMarket') }}</span>
     </div>
     <div class="content">
       <div class="list">
-        <div class="subTitle">币种A</div>
+        <div class="subTitle">{{ $t('dex.coin', {coin: 'A'}) }}</div>
         <el-form class="formDiv" ref="formBorrow">
           <!-- 抵押数量 -->
           <el-form-item>
             <div class="label">{{ $t('dex.contract') }}</div>
-            <el-input v-model="symnol0.contract" type="text" placeholder="请输入合约地址" clearable></el-input>
+            <el-input v-model="symnol0.contract" type="text" :placeholder="$t('dex.plsContract')" clearable></el-input>
           </el-form-item>
           <el-form-item>
             <div class="label">{{ $t('dex.coinName') }}</div>
-            <el-input class="mt10" v-model="symnol0.coinName" type="text" placeholder="请输入币种名称" clearable></el-input>
+            <el-input class="mt10" v-model="symnol0.coinName" type="text" :placeholder="$t('dex.plsCoinName')" clearable></el-input>
           </el-form-item>
           <el-form-item>
             <div class="label">{{ $t('dex.coinDecimal') }}</div>
-            <el-input class="mt10" v-model="symnol0.decimal" type="number" placeholder="请输入币种精度" clearable></el-input>
+            <el-input class="mt10" v-model="symnol0.decimal" type="number" :placeholder="$t('dex.plsCoinDecimal')" clearable></el-input>
           </el-form-item>
         </el-form>
       </div>
 
       <div class="list">
-        <div class="subTitle">币种B</div>
+        <div class="subTitle">{{ $t('dex.coin', {coin: 'B'}) }}</div>
         <el-form class="formDiv" ref="formBorrow">
           <el-form-item>
             <div class="label">{{ $t('dex.contract') }}</div>
-            <el-input v-model="symnol1.contract" type="text" placeholder="请输入合约地址"  clearable></el-input>
+            <el-input v-model="symnol1.contract" type="text" :placeholder="$t('dex.plsContract')"  clearable></el-input>
           </el-form-item>
           <el-form-item>
             <div class="label">{{ $t('dex.coinName') }}</div>
-            <el-input class="mt10" v-model="symnol1.coinName" type="text" placeholder="请输入币种名称" clearable></el-input>
+            <el-input class="mt10" v-model="symnol1.coinName" type="text" :placeholder="$t('dex.plsCoinName')" clearable></el-input>
           </el-form-item>
           <el-form-item>
             <div class="label">{{ $t('dex.coinDecimal') }}</div>
-            <el-input class="mt10" v-model="symnol1.decimal" type="number" placeholder="请输入币种精度" clearable></el-input>
+            <el-input class="mt10" v-model="symnol1.decimal" type="number" :placeholder="$t('dex.plsCoinDecimal')" clearable></el-input>
           </el-form-item>
         </el-form>
       </div>
 
-      <el-button class="btn" type="primary" v-if="scatter.identity" @click="handleNewMarket" plain>提交</el-button>
+      <el-button class="btn" type="primary" v-if="scatter.identity" @click="handleNewMarket" plain>{{ $t('dex.submit') }}</el-button>
       <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
     </div>
   </div>

@@ -1,13 +1,15 @@
 <template>
   <div class="layout">
     <div class="project">
-      <header-nav @listenLogin="handleLogin"/>
+      <header-nav @listenLogin="handleLogin" @listenShowNav="handleShowNav"/>
     </div>
     <transition name="fade" mode="out-in">
-      <router-view class="content" @listenLogin="handleLogin"
+      <router-view class="content" @listenLogin="handleLogin" @listenShowBonus="handleShowBonus"
         :marketLists="marketLists"/>
     </transition>
     <warm-tip />
+    <nav-list ref="nav" @listenLoginOut="handleLoginOut" @listenShowBonus="handleShowBonus"/>
+    <bonus ref="bonus"/>
   </div>
 </template>
 
@@ -17,12 +19,16 @@ import { mapState } from 'vuex'
 import { EosModel } from '@/utils/eos';
 import WarmTip from '@/components/WarmTip';
 import HeaderNav from '@/components/HeaderNav';
+import NavList from '@/components/Nav';
+import Bonus from '@/components/Bonus';
 
 export default {
   name: 'layout',
   components: {
     WarmTip,
-    HeaderNav
+    HeaderNav,
+    NavList,
+    Bonus
   },
   data() {
     return {
@@ -49,6 +55,13 @@ export default {
       EosModel.accountLoginOut(() => {
         location.reload()
       });
+    },
+    handleShowNav() {
+      this.$refs.nav.showNav = true;
+    },
+    handleShowBonus() {
+      this.$refs.nav.showNav = false;
+      this.$refs.bonus.showBonus = true;
     },
     // 获取做市池子
     handleRowsMarket() {

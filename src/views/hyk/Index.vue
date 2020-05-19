@@ -3,19 +3,19 @@
     <!-- 方式1: 现价认购 -->
     <div class="type">
       <div class="navTitle">
-        <span class="title">认购</span>
-        <span class="bonus" @click="showBonus = !showBonus">股权权益</span>
+        <span class="title">{{ $t('tab.hyk') }}</span>
+        <span class="bonus" @click="handleShowBonus">{{ $t('hyk.stock') }}</span>
       </div>
       <el-form class="formDiv" ref="formBorrow">
         <el-form-item>
           <div class="label">
-            <span>认购价格</span>
+            <span>{{ $t('hyk.stockPrice') }}</span>
             <span>{{ 1/price | numberTofixed }} EOS/HYK</span>
           </div>
         </el-form-item>
         <el-form-item>
           <div class="label">
-            <span>{{ $t('hyk.rate') }}</span>
+            <span>{{ $t('hyk.stockRate') }}</span>
             <span>{{ percentage }}%</span>
           </div>
           <div class="progress">
@@ -25,7 +25,7 @@
         <div class="bgF5">
           <!-- 抵押数量 -->
           <el-form-item>
-            <div class="label">认购金额</div>
+            <div class="label">{{ $t('hyk.buyCount') }}</div>
             <el-input v-model="payNum"
               @focus="handleIptFocus('stake')"
               @input="handleGetNum" @blur="handleInputBlur('stake')" type="number">
@@ -34,7 +34,7 @@
           </el-form-item>
           <!-- 生成总额 -->
           <el-form-item>
-            <div class="label">认购数量</div>
+            <div class="label">{{ $t('hyk.buyNum') }}</div>
             <el-input v-model="getNum"
               @focus="handleIptFocus('mint')"
               @input="handleGetTransNum" @blur="handleInputBlur('mint')" type="number">
@@ -47,7 +47,7 @@
         <div class="balance">
           <span>{{ $t('public.balance') }}：{{balanceEos}} EOS</span>
         </div>
-        <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleTransfer">{{ $t('hyk.buyHYK') }}</el-button>
+        <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleTransfer">{{ $t('tab.hyk') }}</el-button>
         <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
       </el-form>
     </div>
@@ -81,13 +81,6 @@
         <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
       </el-form>
     </div>
-
-    <el-dialog
-      class="dialog"
-      width="320px"
-      :visible.sync="showBonus">
-      <bonus v-if="showBonus"/>
-    </el-dialog>
   </div>
 </template>
 
@@ -96,12 +89,12 @@ import { mapState } from 'vuex';
 import { EosModel } from '@/utils/eos';
 import { toFixed } from '@/utils/public';
 import { dealTrade } from '@/utils/logic';
-import Bonus from '@/components/Bonus';
+// import Bonus from '@/components/Bonus';
 
 export default {
   name: 'buyHyk',
   components: {
-    Bonus
+    // Bonus
   },
   data() {
     return {
@@ -133,7 +126,6 @@ export default {
         symbol0: "EOS",
         symbol1: "JIN",
       },
-      showBonus: false,
     }
   },
   props: {
@@ -178,6 +170,10 @@ export default {
     }
   },
   methods: {
+    handleShowBonus() {
+      this.$emit('listenShowBonus', true)
+      // this.$refs.bonus.showBonus = true;
+    },
     handleLogin() {
       this.$emit('listenLogin', true);
     },
@@ -345,7 +341,7 @@ export default {
     .bonus{
       font-size: 14px;
       color: #42B48F;
-      font-weight: bold;
+      font-weight: 500;
     }
   }
   .formDiv{
@@ -355,7 +351,7 @@ export default {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-weight: bold;
+      font-weight: 500;
     }
     .bgF5{
       background: #f5f5f5;
@@ -408,14 +404,6 @@ export default {
     border-color: transparent;
     &.out{
       background: #C05D5D;
-    }
-  }
-}
-.hyk{
-  /deep/ .el-dialog{
-    border-radius: 8px;
-    .el-dialog__header{
-      padding: 0;
     }
   }
 }

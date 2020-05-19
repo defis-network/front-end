@@ -1,15 +1,15 @@
 <template>
   <div class="borrow">
     <div class="navTitle">
-      <span class="title">金库</span>
+      <span class="title">{{ $t('tab.bank') }}</span>
       <!-- <span>Github></span> -->
-      <a class="github" href="https://github.com/jin-network" target="_blank">Github></a>
+      <!-- <a class="github" href="https://github.com/jin-network" target="_blank">Github></a> -->
     </div>
     <!-- 生成 -->
     <el-form  v-if="index === 1" class="formDiv" ref="formBorrow" label-width="0px">
       <!-- 抵押数量 -->
       <el-form-item>
-        <div class="label">抵押</div>
+        <div class="label">{{ $t('bank.stake') }}</div>
         <el-input v-model="stakeNum"
           @focus="handleIptFocus('stake')"
           @input="handleGetNum" @blur="handleInputBlur('stake')" type="number">
@@ -18,7 +18,7 @@
       </el-form-item>
       <!-- 生成总额 -->
       <el-form-item>
-        <div class="label">生成</div>
+        <div class="label">{{ $t('bank.borrow') }}</div>
         <el-input v-model="generateNum"
           @focus="handleIptFocus('mint')"
           @input="handleGetTransNum" @blur="handleInputBlur('mint')" type="number">
@@ -29,7 +29,7 @@
 
     <!-- 余额 -->
     <div class="balance">
-      <span>铸币费：0.3%</span>
+      <span>{{ $t('bank.genFee') }}：0.3%</span>
       <span>{{ $t('public.balance') }}：{{balanceEos}} {{ baseConfig.baseCoin }}</span>
     </div>
     <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleTransfer">{{ $t('bank.borrowBtn') }}</el-button>
@@ -39,7 +39,7 @@
     <div class="tableList">
       <div class="title">
         <span>{{ $t('bank.record') }}</span>
-        <!-- <span class="right">{{ $t('public.balance') }}: {{ balanceJin }} JIN</span> -->
+        <span class="right">{{ $t('public.balance') }}: {{ balanceJin }} JIN</span>
       </div>
       <div class="lists">
         <div class="noDate" v-if="!tableData.length">{{ $t('public.noData') }}</div>
@@ -54,8 +54,8 @@
             <div>
               <div class="subTitle">
                 <span>{{ $t('bank.stakeNum') }}</span>
-                <span class="stake" v-if="!item.staked" @click="handleStake(item)">抵押物挖矿</span>
-                <span class="stakeing" v-else>挖矿中</span>
+                <span class="stake" v-if="!item.staked" @click="handleStake(item)">{{ $t('bank.mineStake') }}</span>
+                <span class="stakeing" v-else>{{ $t('bank.mining') }}</span>
               </div>
               <div class="num">{{ item.pledge }}</div>
             </div>
@@ -69,6 +69,7 @@
     </div>
     <!-- 赎回详情 -->
     
+    <mining :dateTime="showTime" ref="mining"/>
   </div>
 </template>
 
@@ -76,9 +77,13 @@
 import { mapState } from 'vuex';
 import { EosModel } from '@/utils/eos';
 import { toFixed, toLocalTime, getPrice } from '@/utils/public';
+import Mining from './components/Mining';
 
 export default {
   name: 'borrow',
+  components: {
+    Mining
+  },
   data() {
     return {
       stakeNum: '0.0000', // 抵押数量 - 4位小数
@@ -106,6 +111,7 @@ export default {
       balanceEos: '0.0000',
       balanceJin: '0.0000',
       tableData: [], // 生成记录
+      showTime: '',
     }
   },
   computed:{
@@ -211,16 +217,14 @@ export default {
     },
     handleReg(item) {
       if (!item.ableRedeem) {
-        this.$message({
-          type: 'info',
-          message: `挖矿中，将于 ${item.ableRedeemDate} 后可赎回`,
-        })
+        this.showTime = item.ableRedeemDate;
+        this.$refs.mining.showTime = true;
         return;
       }
       const issue = item.issue.split(' ')[0]
       if (Number(issue) > Number(this.balanceJin)) {
         this.$message({
-          message: 'balance lower',
+          message: 'overdrawn balance',
           type: 'error'
         })
         return false;
@@ -374,7 +378,7 @@ export default {
       background-color: transparent;
       .el-input__inner{
         color: #070707;
-        font-weight: 500;
+        font-weight: 600;
         background-color: transparent;
         font-size: 24px;
         padding-left: 0px;
@@ -403,6 +407,7 @@ export default {
     width: 100%;
     background: #42B48F;
     color: #fff;
+    border-color: transparent;
   }
   .tableList{
     margin-top: 15px;
@@ -410,8 +415,15 @@ export default {
     .title{
       height: 40px;
       display: flex;
+      font-size: 16px;
       align-items: center;
       font-weight: 500;
+      justify-content: space-between;
+      .right{
+        font-size: 12px;
+        font-weight: normal;
+        color: #070707;
+      }
     }
     .noDate{
       border-top: 1px solid #DEDEDE;
