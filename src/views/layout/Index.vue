@@ -90,6 +90,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/*iphone Xs Max*/
+@media only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio:3){
+  .layout{
+    min-height: calc(100vh - 80px) !important;
+  }
+}
+/*iphoneX、iphoneXs*/
+@media only screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) {
+  .layout{
+    min-height: calc(100vh - 80px) !important;
+  }
+}
 .layout{
   width: 100%;
   margin: auto;

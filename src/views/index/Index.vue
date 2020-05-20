@@ -341,7 +341,7 @@ export default {
 
 <style lang="scss" scoped>
 .borrow{
-  padding: 20px 18px;
+  padding: 20px 18px 0;
   .navTitle{
     display: flex;
     align-items: flex-end;
@@ -379,7 +379,7 @@ export default {
       background-color: transparent;
       .el-input__inner{
         color: #070707;
-        font-weight: 600;
+        font-weight: 500;
         background-color: transparent;
         font-size: 24px;
         padding-left: 0px;

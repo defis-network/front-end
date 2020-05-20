@@ -26,8 +26,10 @@
         </el-form-item>
         <el-divider>
           <span class="aniDiv" @click="handleExchange">
-            <span class="iconfont icon-huaban29 topIcon" :class="{'changing': ani}"></span>
-            <span class="iconfont icon-huaban29 bottomIcon" :class="{'changing': ani}"></span>
+            <!-- <span class="iconfont icon-huaban29 topIcon" :class="{'changing': ani}"></span>
+            <span class="iconfont icon-huaban29 bottomIcon" :class="{'changing': ani}"></span> -->
+            <img class="topIcon" :class="{'changing': ani}" src="@/assets/img/top.png" alt="">
+            <img class="bottomIcon" :class="{'changing': ani}" src="@/assets/img/bottom.png" alt="">
           </span>
           <!-- <img class="change" @click="handleExchange" :class="{'changing': ani}" src="@/assets/img/change.png" alt=""> -->
         </el-divider>
@@ -445,44 +447,33 @@ export default {
       }
     }
     .aniDiv{
-      width: 18px;
-      height: 25px;;
+      width: 22px;
+      height: 19px;;
       position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      // flex-direction: column; 
+      flex-direction: column;
       transition: .3s all;
       transform: scale(1);
       margin: 0 20px;
-      // &.changing{
-      //   transform: scale(1.2)
-      // }
     }
     .topIcon{
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      font-size: 14px;
-      color: #42B48F;
-      font-weight: bold;
+      display: block;
+      width: 100%;
       transition: .3s all;
-      transform: translate(0) rotate(-90deg);
+      transform: translate(0);
       &.changing{
-        transform: translate(0, -3px) rotate(-90deg);
+        transform: translate(0, -3px);
       }
     }
     .bottomIcon{
-      position: absolute;
-      bottom: 0px;
-      left: 7px;
-      font-size: 13px;
+      display: block;
+      width: 100%;
       transition: .3s all;
-      transform: translate(0) rotate(90deg);
-      color: #000;
-      font-weight: bold;
+      transform: translate(0);
       &.changing{
-        transform: translate(0, 3px) rotate(90deg);
+        transform: translate(0, 3px);
       }
     }
     .change{

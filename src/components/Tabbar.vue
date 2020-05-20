@@ -59,6 +59,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/*iphone Xs Max*/
+@media only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio:3){
+  .tabbar{
+    padding-bottom: 30px;
+  }
+}
+/*iphoneX、iphoneXs*/
+@media only screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) {
+  .tabbar{
+    padding-bottom: 30px;
+  }
+}
 .tabbar{
   display: flex;
   align-content: center;

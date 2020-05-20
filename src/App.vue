@@ -1,5 +1,5 @@
 <template>
-  <div id="app" :class="{'noTab': $route.meta.noTabbar}">
+  <div id="app" class="app" :class="{'noTab': $route.meta.noTabbar}">
     <router-view></router-view>
     <div class="tabbarDiv" v-if="!$route.meta.noTabbar">
       <tabbar />
@@ -9,7 +9,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import { GetUrlPara } from '@/utils/public';
+import { GetUrlPara, login } from '@/utils/public';
 import Tabbar from '@/components/Tabbar';
 
 export default {
@@ -27,16 +27,23 @@ export default {
     }),
   },
   watch: {
-    '$route':function list(newVal) {
-      console.log(newVal)
-    }
+    // '$route':function list(newVal) {
+    //   console.log(newVal)
+    // }
   },
   created() {
     this.handleEnvReLoad()
     this.handleEnvSet();
     this.handleGetPhoneLanguage();
   },
+  mounted() {
+    // this.handleLogin();
+  },
   methods: {
+    // 登录
+    handleLogin() {
+      login(this, () => {})
+    },
     // 第一次使用dapp时，获取手机语言
     handleGetPhoneLanguage() {
       const lang = localStorage.getItem('language')
@@ -84,17 +91,23 @@ export default {
 
 <style>
 /*iphone Xs Max*/
-/* @media only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio:3){
-  .tabbarDiv {
-    bottom: 30px !important;
+@media only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio:3){
+  .app{
+    padding-bottom: 80px !important;
   }
-} */
+  .noTab{
+    padding-bottom: 0px !important;
+  }
+}
 /*iphoneX、iphoneXs*/
-/* @media only screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) {
-  .tabbarDiv {
-    bottom: 30px !important;
+@media only screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) {
+  .app{
+    padding-bottom: 80px !important;
   }
-} */
+  .noTab{
+    padding-bottom: 0px !important;
+  }
+}
 *{
   padding: 0;
   margin: 0;
@@ -105,6 +118,8 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+.app{
   padding-bottom: 50px;
 }
 
