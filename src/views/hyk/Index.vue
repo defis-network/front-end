@@ -45,9 +45,10 @@
 
         <!-- 余额 -->
         <div class="balance">
-          <span>{{ $t('public.balance') }}：{{balanceEos}} EOS</span>
+          <span @click="handleClickBalan">{{ $t('public.balance') }}：{{balanceEos}} EOS</span>
         </div>
-        <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleTransfer">{{ $t('tab.hyk') }}</el-button>
+        <el-button class="btn" type="primary" :class="{'unabled': !Number(payNum)}"
+          v-if="scatter.identity" plain @click="handleTransfer">{{ $t('tab.hyk') }}</el-button>
         <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
       </el-form>
     </div>
@@ -170,6 +171,10 @@ export default {
     }
   },
   methods: {
+    handleClickBalan() {
+      this.payNum = this.balanceEos;
+      this.handleGetNum();
+    },
     handleShowBonus() {
       this.$emit('listenShowBonus', true)
       // this.$refs.bonus.showBonus = true;
@@ -244,8 +249,24 @@ export default {
       const outData = dealTrade(inData);
       type === 'pay' ? this.getNum2 = toFixed(outData.getNum, 4) : this.payNum2 = toFixed(outData.payNum, 4);
     },
+    handleReg() {
+      if (!Number(this.payNum)) {
+        return;
+      }
+      if (Number(this.payNum) > Number(this.balanceEos)) {
+        this.$message({
+          type: 'error',
+          message: thsi.$t('public.balanLow')
+        })
+        return;
+      }
+      return true;
+    },
     // 铸币
     handleTransfer() {
+      if (!this.handleReg()) {
+        return
+      }
       const params = {
         code: this.baseConfig.baseCoinContract,
         toAccount: this.baseConfig.toAccountByHyk,
@@ -262,7 +283,7 @@ export default {
         }
         this.handleBalanTimer();
         this.$message({
-          message: 'Transfer Success',
+          message: this.$t('public.success'),
           type: 'success'
         });
       })
@@ -285,7 +306,7 @@ export default {
         }
         this.handleBalanTimer();
         this.$message({
-          message: 'Transfer Success',
+          message: this.$t('public.success'),
           type: 'success'
         });
       })
@@ -402,8 +423,8 @@ export default {
     background: #42B48F;
     color: #fff;
     border-color: transparent;
-    &.out{
-      background: #C05D5D;
+    &.unabled{
+      background: rgba(#42B48F, .5);
     }
   }
 }

@@ -10,7 +10,10 @@ export default {
     noTip: '不再提示',
     fee: '手续费',
     cancel: '取消',
-    useDefined: '自定义'
+    useDefined: '自定义',
+    balanLow: '余额不足',
+    tokenLow: '可用凭证数量不足',
+    success: '操作成功',
   },
   tab: {
     bank: '金库',
@@ -43,11 +46,11 @@ export default {
     coin: '币种{coin}',
     contract: '合约地址',
     plsContract: '输入合约地址',
-    coinNAme: '币种名称',
+    coinName: '币种名称',
     plsCoinName: '输入币种名称',
     coinDecimal: '币种精度',
     plsCoinDecimal: '输入币种精度',
-    submit: '提交',
+    submit: '创建',
   },
   pools: {
     deposit: '存入',

@@ -86,11 +86,12 @@
       <!-- 余额 -->
       <div class="balance">
         <span>{{ $t('public.fee') }}：0.3%</span>
-        <span v-if="!direction">{{ $t('public.balance') }}：{{balanceSym0}} {{ thisMarket.symbol0 }}</span>
-        <span v-else>{{ $t('public.balance') }}：{{balanceSym1}} {{ thisMarket.symbol1 }}</span>
+        <span v-if="!direction" @click="handleClickBalan">{{ $t('public.balance') }}：{{balanceSym0}} {{ thisMarket.symbol0 }}</span>
+        <span v-else @click="handleClickBalan">{{ $t('public.balance') }}：{{balanceSym1}} {{ thisMarket.symbol1 }}</span>
       </div>
 
-      <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleSwapTrade">{{ $t('dex.swapNow') }}</el-button>
+      <el-button class="btn" type="primary" :class="{'unabled': !Number(payNum)}"
+        v-if="scatter.identity" plain @click="handleSwapTrade">{{ $t('dex.swapNow') }}</el-button>
       <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
     </div>
 
@@ -206,6 +207,10 @@ export default {
     clearInterval(this.timer)
   },
   methods: {
+    handleClickBalan() {
+      this.payNum = !this.direction ? this.balanceSym0 : this.balanceSym1;
+      this.handleInBy('pay')
+    },
     handleShowSlipTip() {
       this.$refs.slipTip.showTip = true;
     },
@@ -346,8 +351,25 @@ export default {
       type === 'pay' ? this.payNum = toFixed(Number(this.payNum), 4)
                      : this.getNum = toFixed(Number(this.getNum), 4);
     },
+    handleReg() {
+      if (!Number(this.payNum)) {
+        return false;
+      }
+      const balance = !this.direction ? Number(this.balanceSym0) : Number(this.balanceSym1);
+      if (Number(this.payNum) > balance) {
+        this.$message({
+          type: 'error',
+          message: this.$t('public.balanLow')
+        })
+        return false;
+      }
+      return true
+    },
     // swap交易
     handleSwapTrade() {
+      if (!this.handleReg()) {
+        return
+      }
       const tradeCoin = this.direction ? this.thisMarket.symbol1 : this.thisMarket.symbol0;
       const params = {
         code: this.direction ? this.thisMarket.contract1 : this.thisMarket.contract0,
@@ -365,7 +387,7 @@ export default {
         }
         this.handleBalanTimer();
         this.$message({
-          message: 'Transfer Success',
+          message: this.$t('public.success'),
           type: 'success'
         });
       })
@@ -593,6 +615,9 @@ export default {
     background: #42B48F;
     color: #fff;
     border-color: transparent;
+    &.unabled{
+      background: rgba(#42B48F, .5);
+    }
   }
 }
 </style>

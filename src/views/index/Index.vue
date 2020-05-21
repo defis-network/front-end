@@ -30,9 +30,10 @@
     <!-- 余额 -->
     <div class="balance">
       <span>{{ $t('bank.genFee') }}：0.3%</span>
-      <span>{{ $t('public.balance') }}：{{balanceEos}} {{ baseConfig.baseCoin }}</span>
+      <span @click="handleClickBalan">{{ $t('public.balance') }}：{{balanceEos}} {{ baseConfig.baseCoin }}</span>
     </div>
-    <el-button class="btn" type="primary" v-if="scatter.identity" plain @click="handleTransfer">{{ $t('bank.borrowBtn') }}</el-button>
+    <el-button class="btn" type="primary" :class="{'unabled': !Number(stakeNum)}"
+      v-if="scatter.identity" plain @click="handleTransfer">{{ $t('bank.borrowBtn') }}</el-button>
     <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
 
     <!-- 列表 -->
@@ -102,7 +103,6 @@ export default {
       rangFocus: false,
       loading: false,
       userData: {},
-      balance: '0.0000',
       userOpenStatusVo: { // 用户开仓状态
       },
       price: 2.7600, // 价格
@@ -225,7 +225,7 @@ export default {
       const issue = item.issue.split(' ')[0]
       if (Number(issue) > Number(this.balanceJin)) {
         this.$message({
-          message: 'overdrawn balance',
+          message: this.$t('public.balanLow'),
           type: 'error'
         })
         return false;
@@ -253,7 +253,7 @@ export default {
         }
         this.handleBalanTimer();
         this.$message({
-          message: 'Redeem Success',
+          message: this.$t('public.success'),
           type: 'success'
         });
       })
@@ -273,7 +273,7 @@ export default {
         }
         this.handleBalanTimer();
         this.$message({
-          message: 'Stake Success',
+          message: this.$t('public.success'),
           type: 'success'
         });
       });
@@ -285,8 +285,29 @@ export default {
     handleLogin() {
       this.$emit('listenLogin', true)
     },
+    handleClickBalan() {
+      this.stakeNum = this.balanceEos;
+      this.handleGetNum();
+    },
+    // 铸币验证
+    handleRegMint() {
+      if (!Number(this.stakeNum)) {
+        return false
+      }
+      if (Number(this.stakeNum) > Number(this.balanceEos)) {
+        this.$message({
+          type: 'error',
+          message: this.$t('public.balanLow')
+        })
+        return false;
+      }
+      return true;
+    },
     // 铸币
     handleTransfer() {
+      if (!this.handleRegMint()) {
+        return
+      }
       const params = {
         code: this.baseConfig.baseCoinContract,
         toAccount: this.baseConfig.toAccountJin,
@@ -303,7 +324,7 @@ export default {
         }
         this.handleBalanTimer();
         this.$message({
-          message: 'Transfer Success',
+          message: this.$t('public.success'),
           type: 'success'
         });
       })
@@ -409,6 +430,9 @@ export default {
     background: #42B48F;
     color: #fff;
     border-color: transparent;
+    &.unabled{
+      background: rgba(#42B48F, .5);
+    }
   }
   .tableList{
     margin-top: 15px;

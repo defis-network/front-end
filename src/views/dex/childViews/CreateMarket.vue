@@ -112,7 +112,7 @@ export default {
         }
         this.$emit('listenGetMarketsList', true)
         this.$message({
-          message: 'Create Success',
+          message: this.$t('public.success'),
           type: 'success'
         });
       })

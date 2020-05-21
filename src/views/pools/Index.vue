@@ -43,7 +43,7 @@
           <el-form-item>
             <div class="label">
               <span>{{ $t('pools.token') }}</span>
-              <span>（{{ $t('pools.ableToken') }} {{token}}）</span>
+              <span @click="handleClickToken">（{{ $t('pools.ableToken') }} {{token}}）</span>
             </div>
             <el-input v-model="sellToken" type="number"
                       @focus="handleIptFocus()"
@@ -79,13 +79,19 @@
       </div>
       <div class="balance">
         <span>{{ $t('public.balance') }}：</span>
-        <span class="num">{{balanceSym0}} {{ thisMarket.symbol0 }} / {{balanceSym1}} {{ thisMarket.symbol1 }}</span>
+        <span class="num">
+          <span @click="handleClickBalan('sym0')">{{balanceSym0}} {{ thisMarket.symbol0 }}</span>
+          <span> / </span>
+          <span @click="handleClickBalan('sym1')">{{balanceSym1}} {{ thisMarket.symbol1 }}</span>
+        </span>
       </div>
     </div>
 
     <div class="btnDiv">
-      <el-button class="btn" type="primary" v-if="scatter.identity && index === 1" plain @click="handleAddToken">{{ $t('pools.deposit') }}</el-button>
-      <el-button class="btn out" type="danger" v-else-if="scatter.identity && index !== 1" @click="handleToSell" plain>{{ $t('pools.withdrawal') }}</el-button>
+      <el-button class="btn" type="primary" :class="{'unabled': !Number(payNum1) || !Number(payNum2)}"
+        v-if="scatter.identity && index === 1" plain @click="handleAddToken">{{ $t('pools.deposit') }}</el-button>
+      <el-button class="btn out" type="danger" :class="{'unabledOut': !Number(sellToken)}"
+        v-else-if="scatter.identity && index !== 1" @click="handleToSell" plain>{{ $t('pools.withdrawal') }}</el-button>
       <el-button class="btn" type="primary" v-else @click="handleLogin">{{ $t('public.loginPls') }}</el-button>
     </div>
 
@@ -294,8 +300,33 @@ export default {
       this.getToken = outData.getToken;
       this.rate = toFixed(outData.rate, this.thisMarket.decimal1);
     },
+    handleClickBalan(type = 'sym0') {
+      if (type === 'sym0') {
+        this.payNum1 = this.balanceSym0;
+        this.handleInBy('pay')
+        return
+      }
+      this.payNum2 = this.balanceSym1;
+      this.handleInBy('get')
+    },
+    handleRegAdd() {
+      if (!Number(this.payNum1) || !Number(this.payNum2)) {
+        return false;
+      }
+      if (Number(this.payNum1) > Number(this.balanceSym0) || Number(this.payNum2) > Number(this.balanceSym1)) {
+        this.$message({
+          type: 'error',
+          message: this.$t('public.balanLow')
+        })
+        return false
+      }
+      return true
+    },
     // 存币做市
     handleAddToken() {
+      if (!this.handleRegAdd()) {
+        return
+      }
       const obj = this.thisMarket;
       const formName = this.$store.state.app.scatter.identity.accounts[0].name;
       const permission = this.$store.state.app.scatter.identity.accounts[0].authority;
@@ -353,7 +384,7 @@ export default {
         }
         this.handleGetAccToken();
         this.$message({
-          message: 'Transfer Success',
+          message: this.$t('public.success'),
           type: 'success'
         });
       })
@@ -370,7 +401,27 @@ export default {
       this.getNum1 = toFixed(outData.getNum1, this.thisMarket.decimal0);
       this.getNum2 = toFixed(outData.getNum2, this.thisMarket.decimal1);
     },
+    handleClickToken() {
+      this.sellToken = this.token;
+      this.handleSellToken();
+    },
+    handleRegSell() {
+      if (!Number(this.sellToken)) {
+        return false;
+      }
+      if (Number(this.sellToken) > Number(this.token)) {
+        this.$message({
+          type: 'error',
+          message: this.$t('public.tokenLow')
+        })
+        return false;
+      }
+      return true;
+    },
     handleToSell() {
+      if (!this.handleRegSell()) {
+        return
+      }
       const obj = this.thisMarket;
       const formName = this.$store.state.app.scatter.identity.accounts[0].name;
       const permission = this.$store.state.app.scatter.identity.accounts[0].authority;
@@ -401,7 +452,7 @@ export default {
         }
         this.handleGetAccToken();
         this.$message({
-          message: 'Transfer Success',
+          message: this.$t('public.success'),
           type: 'success'
         });
       })
@@ -577,6 +628,12 @@ export default {
     border-color: transparent;
     &.out{
       background: #C05D5D;
+      &.unabledOut{
+        background: rgba(#C05D5D, .5) !important;
+      }
+    }
+    &.unabled{
+      background: rgba(#42B48F, .5);
     }
   }
 }
