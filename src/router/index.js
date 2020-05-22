@@ -45,6 +45,12 @@ const constantRouter = [
         component: () => import(/* webpackChunkName: "nopage" */ '@/views/hyk/Index.vue'),
         meta: { title: 'hyk' },
       },
+      {
+        path: '/tutorial',
+        name: 'tutorial',
+        component: () => import(/* webpackChunkName: "nopage" */ '@/views/index/childViews/Tutorial.vue'),
+        meta: { title: 'bank' },
+      },
     ]
   },
   {

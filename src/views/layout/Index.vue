@@ -33,6 +33,7 @@ export default {
   data() {
     return {
       marketLists: [],
+      timer: null,
     }
   },
   computed:{
@@ -45,8 +46,18 @@ export default {
   mounted() {
     EosModel.scatterInit(this, () => {})
     this.handleRowsMarket();
+    this.handleStartTimer();
+  },
+  beforeDestroy() {
+    clearInterval(this.timer);
   },
   methods: {
+    handleStartTimer() {
+      clearInterval(this.timer);
+      this.timer = setInterval(() => {
+        this.handleRowsMarket();
+      }, 5000);
+    },
     // 登录
     handleLogin() {
       login(this, () => {})
@@ -82,7 +93,6 @@ export default {
           v.decimal1 = sym1[0]; // 精度
         });
         this.marketLists = list;
-        console.log(list)
       })
     }
   }

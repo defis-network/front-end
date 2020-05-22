@@ -2,7 +2,7 @@ export default {
   public: {
     loginPls: '请先登录',
     login: '登录',
-    warmTip: '项目尚处于Beta阶段，使用需自行承担风险。',
+    warmTip: '项目仍处在实验阶段，请注意并自行承担使用风险。',
     balance: '余额',
     noData: '暂无数据',
     loginOut: '退出',
@@ -14,6 +14,7 @@ export default {
     balanLow: '余额不足',
     tokenLow: '可用凭证数量不足',
     success: '操作成功',
+    tutorial: '教程',
   },
   tab: {
     bank: '金库',

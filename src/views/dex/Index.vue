@@ -371,10 +371,11 @@ export default {
         return
       }
       const tradeCoin = this.direction ? this.thisMarket.symbol1 : this.thisMarket.symbol0;
+      const minOutDecimal = this.direction ? this.thisMarket.decimal1 : this.thisMarket.decimal0;
       const params = {
         code: this.direction ? this.thisMarket.contract1 : this.thisMarket.contract0,
         toAccount: this.baseConfig.toAccountSwap,
-        memo: `swap:${this.thisMarket.mid}`,
+        memo: `swap:${this.thisMarket.mid}:${this.getNum * (10 ** minOutDecimal)}`,
         quantity: `${this.payNum} ${tradeCoin}`
       }
       EosModel.transfer(params, (res) => {

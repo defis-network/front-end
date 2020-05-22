@@ -7,6 +7,7 @@
       :show-close="false"
       :visible.sync="showNav">
       <div class="navList">
+        <div class="list" @click="handleToTutorial">{{ $t('public.tutorial') }}</div>
         <div class="list" @click="handleShowBonus">{{ $t('hyk.stock') }}</div>
         <div class="list">
           <span v-if="language !== 'en'" @click="handleChangeLang('en')">EN</span>
@@ -39,6 +40,12 @@ export default {
       this.showNav = false;
       this.$i18n.locale = type;
       this.$store.dispatch('setLanguage', type);
+    },
+    handleToTutorial() {
+      this.showNav = false;
+      this.$router.push({
+        name: 'tutorial'
+      })
     },
     handleShowBonus() {
       this.$emit('listenShowBonus', true)

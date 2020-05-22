@@ -1,8 +1,8 @@
 export default {
   public: {
-    loginPls: 'Login first',
+    loginPls: 'Login',
     login: 'Login',
-    warmTip: 'The project is still in the Beta stage, and the use is at your own risk.',
+    warmTip: 'The project is still an experimental software. Please use at your own risk.',
     balance: 'Bal.',
     noData: 'No record',
     loginOut: 'Exit',
@@ -14,6 +14,7 @@ export default {
     balanLow: 'overdrawn balance',
     tokenLow: 'Insufficient available certificate',
     success: 'Operate successfully',
+    tutorial: 'Tutorial',
   },
   tab: {
     bank: 'Bank',
