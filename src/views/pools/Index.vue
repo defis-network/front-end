@@ -156,7 +156,7 @@ export default {
           this.thisMarket = newVal[0];
           return;
         }
-        this.thisMarket = newVal.filter(v => v.mid === this.thisMarket.mid)
+        this.thisMarket = newVal.find(v => v.mid === this.thisMarket.mid)
       },
       immediate: true,
       deep: true
