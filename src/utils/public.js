@@ -44,7 +44,6 @@ export function accDiv(arg1, arg2) {
 // 登录
 export function login(vThis, cb) {
   EosModel.scatterInit(vThis, () => {
-    console.log(123)
     handleScatterOut(cb)
   });
 }

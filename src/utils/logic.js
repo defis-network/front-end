@@ -129,8 +129,15 @@ export function dealToken(inData) {
     };
   }
   if (inData.poolToken === 0) {
-    let getToken = Math.sqrt(inData.payNum1 * inData.payNum2) - config.MINIMUM_LIQUIDITY;
-        getToken = parseInt(parseInt);
+    // console.log(inData)
+    const amount0 = inData.payNum1 * 10 ** inData.decimal0;
+    const amount1 = inData.payNum2 * 10 ** inData.decimal1;
+    let getToken = Math.sqrt(amount0 * amount1) - config.MINIMUM_LIQUIDITY;
+        getToken = parseInt(getToken);
+    if (getToken < 0) {
+      getToken = 0
+    }
+    const rate = inData.payNum2 / (Number(inData.payNum1) || 1);
     return {
       payNum1,
       payNum2,

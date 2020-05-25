@@ -127,7 +127,8 @@ export default {
       balanceSym0: '0.0000',
       balanceSym1: '0.0000',
       timer: null,
-      rate: '0.0000'
+      rate: '0.0000',
+      dealType: 'pay', // 当前输入方式
     }
   },
   props: {
@@ -174,7 +175,7 @@ export default {
     thisMarket() {
       this.handleBalanTimer();
       this.handleGetAccToken();
-      this.handleInBy('pay')
+      this.handleInBy(this.dealType)
     }
   },
   computed:{
@@ -284,6 +285,7 @@ export default {
     },
     // 计算存币获取凭证
     handleInBy(type = 'pay') {
+      this.dealType = type
       const inData = {
         poolSym0: this.thisMarket.reserve0.split(' ')[0],
         poolSym1: this.thisMarket.reserve1.split(' ')[0],
@@ -294,11 +296,20 @@ export default {
       } else {
         inData.payNum2 = this.payNum2;
       }
+      if (!this.thisMarket.liquidity_token) {
+        inData.payNum1 = this.payNum1;
+        inData.payNum2 = this.payNum2;
+        inData.decimal0 = this.thisMarket.decimal0;
+        inData.decimal1 = this.thisMarket.decimal1
+      }
       const outData = dealToken(inData)
+      this.rate = toFixed(outData.rate, this.thisMarket.decimal1);
+      if (!this.thisMarket.liquidity_token && (!Number(this.payNum1) || !Number(this.payNum2))) {
+        return;
+      }
       type === 'pay' ? this.payNum2 = toFixed(outData.payNum2, this.thisMarket.decimal1) :
                        this.payNum1 = toFixed(outData.payNum1, this.thisMarket.decimal0);
       this.getToken = outData.getToken;
-      this.rate = toFixed(outData.rate, this.thisMarket.decimal1);
     },
     handleClickBalan(type = 'sym0') {
       if (type === 'sym0') {
@@ -311,6 +322,9 @@ export default {
     },
     handleRegAdd() {
       if (!Number(this.payNum1) || !Number(this.payNum2)) {
+        return false;
+      }
+      if (!Number(this.getToken)) {
         return false;
       }
       if (Number(this.payNum1) > Number(this.balanceSym0) || Number(this.payNum2) > Number(this.balanceSym1)) {
