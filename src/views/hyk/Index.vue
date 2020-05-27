@@ -256,7 +256,7 @@ export default {
       if (Number(this.payNum) > Number(this.balanceEos)) {
         this.$message({
           type: 'error',
-          message: thsi.$t('public.balanLow')
+          message: this.$t('public.balanLow')
         })
         return;
       }

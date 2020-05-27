@@ -292,7 +292,7 @@ class model {
 * 获取 getTableRows
 */
 async getTableRows(obj, callback) {
-  const formName = this.accountReset();
+  // const formName = this.accountReset();
   const params = obj;
   // 配置
   if (!this.EosJsUse) {
@@ -300,8 +300,10 @@ async getTableRows(obj, callback) {
   }
   this.EosJsUse.getTableRows(params).then((rammarket) => {
     callback(rammarket)
-  }).catch((e) => {
-    this.errorCall(e, callback);
+  })
+  .catch((e) => {
+    console.log(e);
+    // this.errorCall(e, callback);
   });
 }
 
