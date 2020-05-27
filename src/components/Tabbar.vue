@@ -44,6 +44,16 @@ export default {
       ]
     }
   },
+  watch: {
+    '$route': {
+      handler: function r() {
+        const index = this.routName.findIndex(v => v === this.$route.name)
+        this.checked = index
+      },
+      deep: true,
+      immediate: true,
+    }
+  },
   methods: {
     handleTo(index) {
       if (index === this.checked) {
