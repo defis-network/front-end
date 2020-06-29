@@ -1,100 +1,34 @@
 <template>
   <el-dialog
     class="dialog"
-    :class="{'unstakeAct': active === 3}"
-    width="305px"
+    width="320px"
     :visible.sync="showBonus">
     <div class="bonus" v-if="showBonus">
-      <div class="title" v-if="active !== 3">
-        <span :class="{'green': active === 1}" @click="handleClickActive(1)">{{ $t('hyk.stock') }}</span>
-        <span :class="{'green': active === 2}" @click="handleClickActive(2)">我的红利</span>
-      </div>
-      <div class="subTool" v-else>
-        <span @click="handleClickActive(2)" class="iconfont icon-huaban29 back"></span>
-        <span>赎回详情</span>
-      </div>
-      <div class="list" v-if="active === 1">
-        <div class="next">
-          <div class="item mt12">
-            <span>下轮分红</span>
-            <span>167:00:00</span>
-          </div>
-          <div class="item">
-            <span>分红总量</span>
-            <span>100.0000 EOS</span>
-          </div>
+      <div class="title">{{ $t('hyk.stock') }}</div>
+      <div class="list">
+        <div>
+          <span>{{ $t('hyk.bonusAcc') }}</span>
+          <span class="num" @click="handleToBrowser">{{ baseConfig.bonusAccount }}</span>
         </div>
-        <div class="item mt12">
-          <span>DFS流通量</span>
-          <span>123132.2345 DFS</span>
+        <div class='bonusTotal'>
+          <span>{{ $t('hyk.totalBonus') }}</span>
+          <span class="num">{{ balanceEos }} EOS</span>
         </div>
-        <div class="item">
-          <span>DFS质押总量</span>
-          <span>123132.2345 DFS</span>
-        </div>
-        <div class="item mt12">
+        <div class="balan">
           <span></span>
-          <span class="small">占流通总量的 80.00%</span>
+          <span class="num">{{ balanceJin }} JIN</span>
         </div>
-        <div class="item">
-          <span>每万股分红</span>
-          <span class="green">1.2345 USD</span>
+        <div class="totalValue">
+          <span>{{ $t('hyk.totalVal') }}</span>
+          <span class="num">{{ totalValue }} USD</span>
         </div>
-      </div>
-      <!-- 我的红利 -->
-      <div class="list" v-else-if="active === 2">
-        <div class="next">
-          <div class="item mt12">
-            <span>我的红利</span>
-            <span class="green">领取</span>
-          </div>
-          <div class="bonusNum">
-            <span>100.0000 EOS</span>
-          </div>
+        <div>
+          <span>{{ $t('hyk.holdings') }}</span>
+          <span class="num">{{ totalHykBonus }} HYK</span>
         </div>
-        <div class="item">
-          <span>可质押</span>
-          <span>1.2345 DFS</span>
-        </div>
-        <div class="item inputItem mt15">
-          <input type="number" placeholder="输入质押数量">
-          <span class="btn">质押</span>
-        </div>
-        <div class="item">
-          <span>已质押</span>
-          <span>1.2345 DFS</span>
-        </div>
-        <div class="item mt15">
-          <span></span>
-          <span class="small">占流通总量的 0.10%</span>
-        </div>
-        <div class="item">
-          <span>可赎回</span>
-          <span>1.2345 DFS</span>
-        </div>
-        <div class="item inputItem mt15">
-          <input type="number" placeholder="输入赎回数量">
-          <span class="btn">赎回</span>
-        </div>
-        <div class="item">
-          <span>赎回中</span>
-          <span @click="handleClickActive(3)">
-            <span>1.2345 DFS</span>
-            <span class="iconfont icon-huaban29 right"></span>
-          </span>
-        </div>
-      </div>
-
-      <div v-else class="unstakeLists">
-        <div class="unstakeList">
-          <div>
-            <span>赎回数量</span>
-            <span>10.8782 DFS</span>
-          </div>
-          <div>
-            <span>赎回时间</span>
-            <span>剩余11天23小时</span>
-          </div>
+        <div>
+          <span>{{ $t('hyk.perBonus') }}</span>
+          <span class="num green">{{ perBonus }} USD</span>
         </div>
       </div>
     </div>
@@ -112,7 +46,6 @@ export default {
   data() {
     return {
       showBonus: false,
-      active: 1, // 1 - 股权权益 | 2 - 我的红利
       balanceEos: '0.0000',
       balanceJin: '0.0000',
       totalValue: '0.0000', // JIN = USD  |  EOS = USD * price
@@ -143,7 +76,6 @@ export default {
       if(!newVal) {
         return;
       }
-      this.handleClickActive(1)
       this.handleStartGetBalan();
       this.handleStartTotalHyk()
     }
@@ -156,9 +88,6 @@ export default {
     clearTimeout(this.timer);
   },
   methods: {
-    handleClickActive(type) {
-      this.active = type;
-    },
     handleToBrowser() {
       toBrowser(this.baseConfig.bonusAccount, 'eos', 'account');
     },
@@ -307,144 +236,49 @@ export default {
       padding: 0;
     }
     .el-dialog__body{
-      padding-bottom: 30px;
-    }
-    .el-dialog__headerbtn{
-      z-index: 10;
-    }
-  }
-
-  &.unstakeAct{
-    /deep/ .el-dialog{
-      .el-dialog__body{
-        padding-top: 10px;
-      }
-      .el-dialog__headerbtn{
-        display: none;
-      }
+      padding-bottom: 20px;
     }
   }
 }
 .bonus{
-  .green{
-    color: #42B48F !important;
-  }
   .title{
     color: #070707;
     font-size: 16px;
     font-weight: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    &>span{
-      flex: 1;
-      text-align: center;
-    }
   }
   .list{
-    font-size: 14px;
     color: #070707;
-    .next{
-      background: #f9f9f9;
-      padding: 20px 15px;
-      margin: 20px 0 18px;
-    }
-    .item{
+    margin-top: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    &>div{
       display: flex;
       align-items: center;
       justify-content: space-between;
-      &.mt12{
-        margin-bottom: 12px;
+      height: 40px;
+      &.bonusTotal{
+        margin-top: 10px;
       }
-      &.mt15{
+      &.balan{
+        margin-top: 5px;
+        margin-bottom: 10px;
+      }
+      &.bonusTotal,
+      &.balan{
+        height: auto;
+      }
+      &.totalValue{
+        padding-bottom: 15px;
+        border-bottom: 1px solid #d5d5d5;
         margin-bottom: 15px;
       }
-      span{
-        &:last-child{
-          font-weight: 500;
-        }
-        &.small{
-          font-size: 12px;
-          // margin-top: 3px;
-          font-weight: normal !important;
-        }
-      }
-      .right{
-        font-size: 12px;
-        margin-left: 10px;
-      }
-    }
-    .bonusNum{
-      font-weight: 500;
-      font-size: 16px;
-      text-align: left;
-    }
-    .inputItem{
-      background: #f9f9f9;
-      height: 37px;
-      margin-top: 5px;
-      input{
-        background: transparent;
-        height: 100%;
-        width: calc(100% - 70px);
-        border: 0px;
-        outline: none;
-        font-size: 14px;
-        padding-left: 10px;
-      }
-      .btn{
-        font-size: 12px;
-        font-weight: 500;
-        height: 31px;
-        width: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #42B48F;
-        color: #f9f9f9;
-        border-radius: 2px;
-        margin-right: 10px;
-      }
-    }
-  }
-  .subTool{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 44px;
-    position: relative;
-    color: #070707;
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 8px;
-    // box-shadow: 0 2px 4px 0 rgba(0,0,0,0.08);
-    .back{
-      font-size: 16px;
-      position: absolute;
-      left: 10px;
-      top: 50%;
-      transform: translate(0%, -50%) rotate(180deg);
-    }
-  }
-  .unstakeLists{
-    height: 349px;
-    overflow: auto;
-    .unstakeList{
-      background: #f9f9f9;
-      color: #070707;
-      font-size: 14px;
-      padding: 20px 15px;
-      margin-bottom: 10px;
       &:last-child{
         margin-bottom: 0px;
       }
-      &>div{
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        &:first-child{
-          margin-bottom: 10px;
+      .num{
+        font-weight: 500;
+        &.green{
+          color: #42B48F
         }
       }
     }
