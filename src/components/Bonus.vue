@@ -7,37 +7,37 @@
     <div class="bonus" v-if="showBonus">
       <div class="title" v-if="active !== 3">
         <span :class="{'green': active === 1}" @click="handleClickActive(1)">{{ $t('hyk.stock') }}</span>
-        <span :class="{'green': active === 2}" @click="handleClickActive(2)">我的红利</span>
+        <span :class="{'green': active === 2}" @click="handleClickActive(2)">{{ $t('bonus.myDividends') }}</span>
       </div>
       <div class="subTool" v-else>
         <span @click="handleClickActive(2)" class="iconfont icon-huaban29 back"></span>
-        <span>赎回详情</span>
+        <span>{{ $t('bonus.redeemDetail') }}</span>
       </div>
       <div class="list" v-if="active === 1">
         <div class="next">
           <div class="item mt12">
-            <span>下轮分红</span>
+            <span>{{ $t('bonus.nextDividends') }}</span>
             <span>167:00:00</span>
           </div>
           <div class="item">
-            <span>分红总量</span>
+            <span>{{ $t('bonus.totalDividends') }}</span>
             <span>100.0000 EOS</span>
           </div>
         </div>
         <div class="item mt12">
-          <span>DFS流通量</span>
+          <span>{{ $t('bonus.dfsSupply') }}</span>
           <span>123132.2345 DFS</span>
         </div>
         <div class="item">
-          <span>DFS质押总量</span>
+          <span>{{ $t('bonus.dfsStaked') }}</span>
           <span>123132.2345 DFS</span>
         </div>
         <div class="item mt12">
           <span></span>
-          <span class="small">占流通总量的 80.00%</span>
+          <span class="small">{{ $t('bonus.ofPercent', {percent: '80.00'}) }}</span>
         </div>
         <div class="item">
-          <span>每万股分红</span>
+          <span>{{ $t('hyk.perBonus') }}</span>
           <span class="green">1.2345 USD</span>
         </div>
       </div>
@@ -45,39 +45,39 @@
       <div class="list" v-else-if="active === 2">
         <div class="next">
           <div class="item mt12">
-            <span>我的红利</span>
-            <span class="green">领取</span>
+            <span>{{ $t('bonus.myDividends') }}</span>
+            <span class="green">{{ $t('bonus.claim') }}</span>
           </div>
           <div class="bonusNum">
             <span>100.0000 EOS</span>
           </div>
         </div>
         <div class="item">
-          <span>可质押</span>
+          <span>{{ $t('bonus.ableStake') }}</span>
           <span>1.2345 DFS</span>
         </div>
         <div class="item inputItem mt15">
-          <input type="number" placeholder="输入质押数量">
-          <span class="btn">质押</span>
+          <input type="number" :placeholder="`${$t('bonus.inStake')}`">
+          <span class="btn">{{ $t('bonus.stake') }}</span>
         </div>
         <div class="item">
-          <span>已质押</span>
+          <span>{{ $t('bonus.staked') }}</span>
           <span>1.2345 DFS</span>
         </div>
         <div class="item mt15">
           <span></span>
-          <span class="small">占流通总量的 0.10%</span>
+          <span class="small">{{ $t('bonus.ofPercent', {percent: '0.10'}) }}</span>
         </div>
         <div class="item">
-          <span>可赎回</span>
+          <span>{{ $t('bonus.redeemable') }}</span>
           <span>1.2345 DFS</span>
         </div>
         <div class="item inputItem mt15">
-          <input type="number" placeholder="输入赎回数量">
-          <span class="btn">赎回</span>
+          <input type="number" :placeholder="`${$t('bonus.inRedeem')}`">
+          <span class="btn">{{ $t('bank.redeem') }}</span>
         </div>
         <div class="item">
-          <span>赎回中</span>
+          <span>{{ $t('bonus.redeeming') }}</span>
           <span @click="handleClickActive(3)">
             <span>1.2345 DFS</span>
             <span class="iconfont icon-huaban29 right"></span>
@@ -88,12 +88,12 @@
       <div v-else class="unstakeLists">
         <div class="unstakeList">
           <div>
-            <span>赎回数量</span>
+            <span>{{ $t('bonus.redeemNum') }}</span>
             <span>10.8782 DFS</span>
           </div>
           <div>
-            <span>赎回时间</span>
-            <span>剩余11天23小时</span>
+            <span>{{ $t('bonus.redeemTime') }}</span>
+            <span>{{ $t('bonus.lastTime', {day: 11, hour: 23}) }}</span>
           </div>
         </div>
       </div>
