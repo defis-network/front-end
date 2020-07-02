@@ -13,7 +13,7 @@
           <span v-if="language !== 'en'" @click="handleChangeLang('en')">EN</span>
           <span v-else @click="handleChangeLang('zh-CN')">CN</span>
         </div>
-        <div class="list"><a class="github" href="https://github.com/jin-network" target="_blank">Github</a></div>
+        <div class="list"><a class="github" href="https://github.com/defis-network" target="_blank">Github</a></div>
         <div class="list" v-if="scatter.identity" @click="handleLoginOut">{{ $t('public.loginOut') }}</div>
       </div>
     </el-dialog>

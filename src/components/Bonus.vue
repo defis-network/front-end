@@ -7,46 +7,20 @@
     <div class="bonus" v-if="showBonus">
       <div class="title" v-if="active !== 3">
         <span :class="{'green': active === 1}" @click="handleClickActive(1)">{{ $t('hyk.stock') }}</span>
-        <span :class="{'green': active === 2}" @click="handleClickActive(2)">{{ $t('bonus.myDividends') }}</span>
+        <span :class="{'green': active === 2}" v-if="scatter.identity"
+          @click="handleClickActive(2)">{{ $t('bonus.myDividends') }}</span>
       </div>
       <div class="subTool" v-else>
         <span @click="handleClickActive(2)" class="iconfont icon-huaban29 back"></span>
         <span>{{ $t('bonus.redeemDetail') }}</span>
       </div>
-      <div class="list" v-if="active === 1">
-        <div class="next">
-          <div class="item mt12">
-            <span>{{ $t('bonus.nextDividends') }}</span>
-            <span>167:00:00</span>
-          </div>
-          <div class="item">
-            <span>{{ $t('bonus.totalDividends') }}</span>
-            <span>100.0000 EOS</span>
-          </div>
-        </div>
-        <div class="item mt12">
-          <span>{{ $t('bonus.dfsSupply') }}</span>
-          <span>123132.2345 DFS</span>
-        </div>
-        <div class="item">
-          <span>{{ $t('bonus.dfsStaked') }}</span>
-          <span>123132.2345 DFS</span>
-        </div>
-        <div class="item mt12">
-          <span></span>
-          <span class="small">{{ $t('bonus.ofPercent', {percent: '80.00'}) }}</span>
-        </div>
-        <div class="item">
-          <span>{{ $t('hyk.perBonus') }}</span>
-          <span class="green">1.2345 USD</span>
-        </div>
-      </div>
+      <bonus-total v-if="active === 1" />
       <!-- 我的红利 -->
       <div class="list" v-else-if="active === 2">
         <div class="next">
           <div class="item mt12">
             <span>{{ $t('bonus.myDividends') }}</span>
-            <span class="green">{{ $t('bonus.claim') }}</span>
+            <span class="green" @click="handleAccGetRefund">{{ $t('bonus.claim') }}</span>
           </div>
           <div class="bonusNum">
             <span>100.0000 EOS</span>
@@ -58,7 +32,7 @@
         </div>
         <div class="item inputItem mt15">
           <input type="number" :placeholder="`${$t('bonus.inStake')}`">
-          <span class="btn">{{ $t('bonus.stake') }}</span>
+          <span class="btn" @click="handleAccToStake">{{ $t('bonus.stake') }}</span>
         </div>
         <div class="item">
           <span>{{ $t('bonus.staked') }}</span>
@@ -74,7 +48,7 @@
         </div>
         <div class="item inputItem mt15">
           <input type="number" :placeholder="`${$t('bonus.inRedeem')}`">
-          <span class="btn">{{ $t('bank.redeem') }}</span>
+          <span class="btn" @click="handleAccToRefund">{{ $t('bank.redeem') }}</span>
         </div>
         <div class="item">
           <span>{{ $t('bonus.redeeming') }}</span>
@@ -106,9 +80,13 @@ import axios from 'axios';
 import { mapState } from 'vuex';
 import { EosModel } from '@/utils/eos';
 import { crazyCurryingHelper, toFixed, getPrice, toBrowser } from "@/utils/public";
+import BonusTotal from './bonusChild/BonusTotal';
 
 export default {
   name: 'bonus',
+  components: {
+    BonusTotal
+  },
   data() {
     return {
       showBonus: false,
@@ -151,6 +129,9 @@ export default {
   mounted() {
     this.handleStartGetBalan();
     this.handleStartTotalHyk()
+
+    // test
+    this.handleGetBalance()
   },
   beforeDestroy() {
     clearTimeout(this.timer);
@@ -169,15 +150,15 @@ export default {
     },
     handleStartTotalHyk() {
       this.handleGetHykStats();
-      this.handleGetBalance('HYK');
-      this.handleGetBalance('HYK Swap')
-      this.handleGetBalance('HYK Funds');
+      // this.handleGetBalance('HYK');
+      // this.handleGetBalance('HYK Swap')
+      // this.handleGetBalance('HYK Funds');
     },
     handleStartGetBalan() {
       clearTimeout(this.timer);
       this.handleInitCurrying();
-      this.handleGetBalance();
-      this.handleGetBalance('next')
+      // this.handleGetBalance();
+      // this.handleGetBalance('next')
       this.handleGetPrice();
       // this.timer = setTimeout(() => {
       //   this.handleGetBalance();
@@ -186,7 +167,7 @@ export default {
       // }, 10000);
     },
     // 获取账户余额
-    async handleGetBalance(type) {
+    async handleGetBalance_old(type) {
       let params = {
         code: this.baseConfig.baseCoinContract,
         coin: 'EOS',
@@ -294,7 +275,129 @@ export default {
     handlePerBonus(totalValue, totalHykBonus) {
       let perBonus = totalValue / (totalHykBonus / 10000);
       this.perBonus = toFixed(perBonus, 4);
-    }
+    },
+    // 获取账户抵押详情
+    handleGetAccStakes() {
+      const params = {
+        code: 'defistakedfs',
+        scope: 'defistakedfs',
+        table: 'stakes',
+        lower_bound: this.scatter.identity.accounts[0].name,
+        upper_bound: this.scatter.identity.accounts[0].name,
+        json: true
+      }
+      EosModel.getTableRows(params, (res) => {
+        console.log(res)
+      })
+    },
+    // 获取账户赎回详情
+    handleGetAccRefunds() {
+      const params = {
+        code: 'defistakedfs',
+        scope: this.scatter.identity.accounts[0].name,
+        table: 'refunds',
+        json: true
+      }
+      EosModel.getTableRows(params, (res) => {
+        console.log(res)
+      })
+    },
+    // 账户转账参与抵押
+    handleAccToStake() {
+      const formName = this.$store.state.app.scatter.identity.accounts[0].name;
+      const permission = this.$store.state.app.scatter.identity.accounts[0].authority;
+      const params = {
+        actions: [
+          {
+            account: 'minedfstoken',
+            name: 'transfer',
+            authorization: [{
+              actor: formName, // 转账者
+              permission,
+            }],
+            data: {
+              from: formName,
+              to: 'defistakedfs',
+              quantity: `100.0000 DFS`,
+              memo: `stake`
+            }
+          }
+        ]
+      }
+      EosModel.toTransaction(params, (res) => {
+        console.log(res)
+      })
+    },
+    // 账户赎回抵押
+    handleAccToRefund() {
+      const formName = this.$store.state.app.scatter.identity.accounts[0].name;
+      const permission = this.$store.state.app.scatter.identity.accounts[0].authority;
+      const params = {
+        actions: [
+          {
+            account: 'defistakedfs',
+            name: 'unstake',
+            authorization: [{
+              actor: formName, // 转账者
+              permission,
+            }],
+            data: {
+              user: formName,
+              quantity: `100.0000 DFS`,
+            }
+          }
+        ]
+      }
+      EosModel.toTransaction(params, (res) => {
+        console.log(res)
+      })
+    },
+    // 用户领取已解抵押的DFS - 根据id领取
+    handleAccGetRefund() {
+      const formName = this.$store.state.app.scatter.identity.accounts[0].name;
+      const permission = this.$store.state.app.scatter.identity.accounts[0].authority;
+      const params = {
+        actions: [
+          {
+            account: 'defistakedfs',
+            name: 'refund',
+            authorization: [{
+              actor: formName, // 转账者
+              permission,
+            }],
+            data: {
+              user: formName,
+              id: 0,
+            }
+          }
+        ]
+      }
+      EosModel.toTransaction(params, (res) => {
+        console.log(res)
+      })
+    },
+    // 获取账户余额
+    async handleGetBalance(next) {
+      const params = {
+        code: 'minedfstoken',
+        coin: 'DFS',
+        decimal: 4
+      };
+      // if (next) {
+      //   params.code = this.thisMarket.contract1;
+      //   params.coin = this.thisMarket.symbol1;
+      //   params.decimal = this.thisMarket.decimal1;
+      // }
+      await EosModel.getCurrencyBalance(params, res => {
+        let balance = '0.0000';
+        (!res || res.length === 0) ? balance = '0.0000' : balance = res.split(' ')[0];
+        if (next) {
+          this.balanceSym1 = balance;
+          return;
+        }
+        this.balanceSym0 = balance;
+      })
+    },
   }
 }
 </script>

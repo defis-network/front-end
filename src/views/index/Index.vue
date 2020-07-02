@@ -2,8 +2,6 @@
   <div class="borrow">
     <div class="navTitle">
       <span class="title">{{ $t('tab.bank') }}</span>
-      <!-- <span>Github></span> -->
-      <!-- <a class="github" href="https://github.com/jin-network" target="_blank">Github></a> -->
     </div>
     <!-- 生成 -->
     <el-form  v-if="index === 1" class="formDiv" ref="formBorrow" label-width="0px">

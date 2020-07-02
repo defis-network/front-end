@@ -3,7 +3,7 @@
     <div class="left">
       <!-- <a href="#">About</a> -->
       <!-- <a href="#">Doc</a> -->
-      <a href="https://github.com/jin-network" target="_blank">Github</a>
+      <a href="https://github.com/defis-network" target="_blank">Github</a>
     </div>
     <div class="right">
       <span class="red" @click="showBonus = true">HYK DAO</span>
