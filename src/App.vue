@@ -89,7 +89,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 /*iphone Xs Max*/
 @media only screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio:3){
   .app{
@@ -108,9 +108,15 @@ export default {
     padding-bottom: 0px !important;
   }
 }
+
 *{
   padding: 0;
   margin: 0;
+  /deep/ .el-message{
+    width: 80% !important;
+    min-width: 80% !important;
+    max-width: 80% !important;
+  }
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

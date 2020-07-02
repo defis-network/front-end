@@ -3,37 +3,163 @@
     <div class="next">
       <div class="item mt12">
         <span>{{ $t('bonus.nextDividends') }}</span>
-        <span>167:00:00</span>
+        <span>{{ `${timeJson.hours}:${timeJson.minutes}:${timeJson.seconds}` }}</span>
       </div>
       <div class="item">
         <span>{{ $t('bonus.totalDividends') }}</span>
-        <span>100.0000 EOS</span>
+        <span>{{ balanceEos }} EOS</span>
       </div>
     </div>
     <div class="item mt12">
       <span>{{ $t('bonus.dfsSupply') }}</span>
-      <span>123132.2345 DFS</span>
+      <span>{{ supply }} DFS</span>
     </div>
     <div class="item">
       <span>{{ $t('bonus.dfsStaked') }}</span>
-      <span>123132.2345 DFS</span>
+      <span>{{ balanceDfs }} DFS</span>
     </div>
     <div class="item mt12">
       <span></span>
-      <span class="small">{{ $t('bonus.ofPercent', {percent: '80.00'}) }}</span>
+      <span class="small">{{ $t('bonus.ofPercent', {percent}) }}</span>
     </div>
     <div class="item">
       <span>{{ $t('hyk.perBonus') }}</span>
-      <span class="green">1.2345 USD</span>
+      <span class="green">{{ wDfs }} EOS</span>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+import { mapState } from 'vuex';
+import { EosModel } from '@/utils/eos';
+import { toFixed, accMul, accDiv, countdown, toLocalTime } from "@/utils/public";
+
 export default {
   name: 'BonusTotal',
   data() {
-    return {}
+    return {
+      nextTime: '',
+      perDfs: '0.0000',
+      wDfs: '0.0000',
+      balanceDfs: '0.0000',
+      balanceEos: '0.0000',
+      timeJson: {
+        days: 0,
+        hours: '00',
+        minutes: '00',
+        seconds: '00',
+        total: 0,
+      },
+      supply: '0.0000',
+      timer: null,
+      balanTimer: null,
+    }
+  },
+  computed:{
+     ...mapState({
+      // 箭头函数可使代码更简练
+      scatter: state => state.app.scatter,
+      baseConfig: state => state.sys.baseConfig, // 基础配置 - 默认为{}
+    }),
+    percent() {
+      if (!Number(this.supply) || !Number(this.balanceDfs)) {
+        return '0.00'
+      }
+      let p = accDiv(this.balanceDfs, this.supply)
+      p = accMul(p, 100);
+      return toFixed(p, 4)
+    }
+  },
+  mounted() {
+    this.handleGetBonusInfo();
+    this.handleStartBalanTimer();
+    this.handleGetDfsStats();
+  },
+  beforeDestroy() {
+    clearInterval(this.timer)
+    clearInterval(this.balanTimer)
+    this.handleGetDfsStats();
+  },
+  methods: {
+    // 开启余额定时器
+    handleStartBalanTimer() {
+      this.handleGetBalance();
+      this.handleGetBalance('staked');
+      clearInterval(this.balanTimer)
+      this.balanTimer = setInterval(() => {
+        this.handleGetBalance();
+        this.handleGetBalance('staked');
+      }, 20000)
+    },
+    // 获取分红信息
+    handleGetBonusInfo() {
+      const params = {
+        code: 'defidividend',
+        scope: 'defidividend',
+        table: 'divds',
+        json: true
+      }
+      EosModel.getTableRows(params, (res) => {
+        // this.nextTime = toLocalTime(res.rows[0].next_dividend + '.000+0000');
+        this.nextTime = toLocalTime('2020-07-16T09:28:45.000+0000');
+        this.perDfs = res.rows[0].reward_per_dfs;
+        this.wDfs = toFixed(accMul(this.perDfs, 10000), 4);
+        this.timeJson = countdown(this.nextTime)
+        clearInterval(this.timer)
+        this.timer = setInterval(() => {
+          if (this.timeJson.total <= 0) {
+            clearInterval(this.timer)
+          }
+          this.timeJson = countdown(this.nextTime)
+        }, 1000);
+      })
+    },
+    // 获取账户余额
+    async handleGetBalance(type) {
+      let params = { // 分红合约余额
+        code: this.baseConfig.baseCoinContract,
+        coin: 'EOS',
+        decimal: 4,
+        account: 'defidividend',
+      }
+      if (type === 'staked') {
+        params = { // 质押合约余额
+          code: 'minedfstoken',
+          coin: 'DFS',
+          decimal: 4,
+          account: 'defistakedfs',
+        }
+      }
+      await EosModel.getCurrencyBalance(params, res => {
+        let balance = '0.0000'
+        if (!res || res.length === 0) {
+          balance = '0.0000';
+        } else {
+          balance = res.split(' ')[0];
+        }
+        if (type === 'staked') {
+          this.balanceDfs = balance;
+          return;
+        }
+        this.balanceEos = toFixed(accDiv(balance, 2), 4);
+      })
+    },
+    // 获取总发行量
+    async handleGetDfsStats() {
+      const https = this.baseConfig.node.url;
+      const params = {
+        code: 'minedfstoken',
+        symbol: 'DFS'
+      }
+      const result = await axios.post(`${https}/v1/chain/get_currency_stats`, JSON.stringify(params))
+      if (result.status !== 200) {
+        return;
+      }
+      const res = result.data['DFS'];
+      this.supply = res.supply.split(' ')[0];
+    },
+
   }
 }
 </script>

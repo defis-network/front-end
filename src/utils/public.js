@@ -158,3 +158,26 @@ export function toBrowser(id, chain, type) {
   }
   location.href = url;
 }
+
+// 倒计时
+export function countdown(endtime) {
+  let t = Date.parse(endtime.replace(/-/g, '/')) - Date.parse(new Date());
+  const days = Math.floor(t / (1000 * 60 * 60 * 24));
+  // let hours = Math.floor((t / (1000 * 60 * 60)) % 24); // 不累加天数的小时
+  let hours = Math.floor((t / (1000 * 60 * 60))); // 累加天数的小时
+  let minutes = Math.floor((t / 1000 / 60) % 60);
+  let seconds = Math.floor((t / 1000) % 60);
+  hours = hours >= 10 ? hours : `0${hours}`;
+  minutes = minutes >= 10 ? minutes : `0${minutes}`;
+  seconds = seconds >= 10 ? seconds : `0${seconds}`;
+  if (t <= 0) {
+    return {
+      total: t,
+      days: 0,
+      hours: '00',
+      minutes: '00',
+      seconds: '00'
+    };
+  }
+  return { total: t, days, hours, minutes, seconds };
+}
