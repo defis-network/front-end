@@ -45,7 +45,7 @@
         </div>
         <div class="item mt15">
           <span></span>
-          <span class="small">{{ $t('bonus.ofPercent', {percent: '0.10'}) }}</span>
+          <span class="small">{{ $t('bonus.ofPercent', {percent}) }}</span>
         </div>
         <div class="item">
           <span>{{ $t('bonus.redeemable') }}</span>
@@ -88,6 +88,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import { mapState } from 'vuex';
 import { EosModel } from '@/utils/eos';
 import { toFixed, accAdd, countdown, toLocalTime } from "@/utils/public";
@@ -110,7 +111,8 @@ export default {
       timer: null,
       // input
       stakeNum: '',
-      refundNum: ''
+      refundNum: '',
+      supply: '0.0000'
     }
   },
   computed:{
@@ -119,6 +121,14 @@ export default {
       scatter: state => state.app.scatter,
       baseConfig: state => state.sys.baseConfig, // 基础配置 - 默认为{}
     }),
+    percent() {
+      if (!Number(this.supply) || !Number(this.staked)) {
+        return '0.00'
+      }
+      let p = accDiv(this.staked, this.supply)
+      p = accMul(p, 100);
+      return toFixed(p, 4)
+    }
   },
   watch: {
     showBonus(newVal) {
@@ -174,6 +184,8 @@ export default {
         this.handleGetBalance();
         this.handleGetAccStakes();
         this.handleGetAccRefunds();
+        this.handleGetAccBonus();
+        this.handleGetDfsStats();
       }
     },
     // 获取账户抵押详情
@@ -191,6 +203,35 @@ export default {
         this.staked = bal;
       })
     },
+    // 获取账户分红数量详情
+    handleGetAccBonus() {
+      const params = {
+        json: true,
+        code: 'defidividend',
+        scope: 'defidividend',
+        table: 'claims',
+        lower_bound: this.scatter.identity.accounts[0].name,
+        upper_bound: this.scatter.identity.accounts[0].name,
+      }
+      EosModel.getTableRows(params, (res) => {
+        const bal = res.rows ? res.rows[0].amount.split(' ')[0] : '0.0000';
+        this.ableClaim = bal;
+      })
+    },
+    // 获取总发行量
+    async handleGetDfsStats() {
+      const https = this.baseConfig.node.url;
+      const params = {
+        code: 'minedfstoken',
+        symbol: 'DFS'
+      }
+      const result = await axios.post(`${https}/v1/chain/get_currency_stats`, JSON.stringify(params))
+      if (result.status !== 200) {
+        return;
+      }
+      const res = result.data['DFS'];
+      this.supply = res.supply.split(' ')[0];
+    },
     // 获取账户赎回详情
     handleGetAccRefunds() {
       const params = {
@@ -200,7 +241,6 @@ export default {
         json: true
       }
       EosModel.getTableRows(params, (res) => {
-        console.log(res)
         const list = res.rows || [];
         let countRefund = 0;
         list.forEach((v) => {

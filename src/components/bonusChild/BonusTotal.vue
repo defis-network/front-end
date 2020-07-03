@@ -101,8 +101,8 @@ export default {
         json: true
       }
       EosModel.getTableRows(params, (res) => {
-        // this.nextTime = toLocalTime(res.rows[0].next_dividend + '.000+0000');
-        this.nextTime = toLocalTime('2020-07-16T09:28:45.000+0000');
+        this.nextTime = toLocalTime(res.rows[0].next_dividend + '.000+0000');
+        // this.nextTime = toLocalTime('2020-07-16T09:28:45.000+0000');
         this.perDfs = res.rows[0].reward_per_dfs;
         this.wDfs = toFixed(accMul(this.perDfs, 10000), 4);
         this.timeJson = countdown(this.nextTime)
