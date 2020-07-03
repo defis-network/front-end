@@ -91,7 +91,7 @@
 import axios from 'axios';
 import { mapState } from 'vuex';
 import { EosModel } from '@/utils/eos';
-import { toFixed, accAdd, countdown, toLocalTime } from "@/utils/public";
+import { toFixed, accAdd, accDiv, accMul, countdown, toLocalTime } from "@/utils/public";
 import BonusTotal from './bonusChild/BonusTotal';
 
 export default {
@@ -199,7 +199,7 @@ export default {
         json: true
       }
       EosModel.getTableRows(params, (res) => {
-        const bal = res.rows ? res.rows[0].bal.split(' ')[0] : '0.0000';
+        const bal = res.rows && res.rows.length ? res.rows[0].bal.split(' ')[0] : '0.0000';
         this.staked = bal;
       })
     },
@@ -214,7 +214,7 @@ export default {
         upper_bound: this.scatter.identity.accounts[0].name,
       }
       EosModel.getTableRows(params, (res) => {
-        const bal = res.rows ? res.rows[0].amount.split(' ')[0] : '0.0000';
+        const bal = res.rows && res.rows.length ? res.rows[0].amount.split(' ')[0] : '0.0000';
         this.ableClaim = bal;
       })
     },
