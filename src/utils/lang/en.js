@@ -65,6 +65,7 @@ export default {
   },
   hyk: {
     stock: 'HYK DAO',
+    stock2: 'HYK DAO',
     stockPrice: 'Subscription price',
     stockRate: 'Subscription progress',
     buyCount: 'Subscription amount',

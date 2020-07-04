@@ -64,7 +64,8 @@ export default {
     chooseMarket: '选择市场',
   },
   hyk: {
-    stock: '股权权益',
+    stock: '分红',
+    stock2: '分红池',
     stockPrice: '认购价格',
     stockRate: '认购进度',
     buyCount: '认购金额',
@@ -73,7 +74,7 @@ export default {
     totalBonus: '分红总量',
     totalVal: '总估值',
     holdings: 'HYK持有量',
-    perBonus: '每万股分红',
+    perBonus: '每万DFS分红',
   },
   bonus: {
     myDividends: '我的红利',

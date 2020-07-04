@@ -6,8 +6,8 @@
     :visible.sync="showBonus">
     <div class="bonus" v-if="showBonus">
       <div class="title" v-if="active !== 3">
-        <span :class="{'green': active === 1}" @click="handleClickActive(1)">{{ $t('hyk.stock') }}</span>
-        <span :class="{'green': active === 2}" v-if="scatter.identity"
+        <span :class="{'green': active === 1}" @click="handleClickActive(1)">{{ $t('hyk.stock2') }}</span>
+        <span :class="{'green': active === 2}"
           @click="handleClickActive(2)">{{ $t('bonus.myDividends') }}</span>
       </div>
       <div class="subTool" v-else>
@@ -102,7 +102,7 @@ export default {
   data() {
     return {
       showBonus: false,
-      active: 1, // 1 - 股权权益 | 2 - 我的红利 | 3 - 赎回列表
+      active: 1, // 1 - 分红池 | 2 - 我的红利 | 3 - 赎回列表
       ableClaim: '0.0000', // 可领取
       balanceDfs: '0.0000',
       staked: '0.0000',
@@ -181,6 +181,9 @@ export default {
     handleClickActive(type) {
       this.active = type;
       if (type === 2) {
+        if (!this.scatter.identity) {
+          return
+        }
         this.handleGetBalance();
         this.handleGetAccStakes();
         this.handleGetAccRefunds();
